@@ -1,5 +1,10 @@
 #include "packet.h"
 
+
+void callback(){
+  Serial.println("callback");
+}
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(38400);
@@ -52,6 +57,8 @@ void setup() {
     unsigned char data[] = {0xAF,0x03,0x01,0x02,0x03,0xFF,0xFF,0xAF,0x04,0x01,0x02,0x03,0x04};
 
     WHILL::PacketReceiver receiver;
+
+    receiver.register_callback(callback);
 
     for(int i=0;i<sizeof(data);i++){
         Serial.println(data[i],HEX);

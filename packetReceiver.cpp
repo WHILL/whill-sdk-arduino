@@ -19,8 +19,7 @@ namespace WHILL{
 
 
         if(index >= 1 && remaining_bytes() == 0){
-            //callback();
-            Serial.println("full!");
+            call_callback();
             index = 0;
             recording = false;
             return 0;
@@ -37,6 +36,34 @@ namespace WHILL{
         int length = 2 + buf[1];  // Protocl sign + length + [len](payload + cs)
 
         return length-(index+1);
+    }
+
+    void PacketReceiver::register_callback(void (*callback)()){
+        this->obj    = NULL;
+        this->method = NULL;
+        this->callback = callback;
+    }
+
+    void PacketReceiver::register_callback(PacketParser* obj,void (PacketParser::*method)()){
+        this->obj = obj;
+        this->method = method;
+        this->callback = NULL;
+    }
+
+
+
+    bool PacketReceiver::call_callback(){
+        if(callback != NULL){
+            this->callback();
+            return true;
+        }
+
+        if(obj != NULL && method != NULL){
+            (obj->*method)();
+            return true;
+        }
+
+        return false;
     }
 
 }
