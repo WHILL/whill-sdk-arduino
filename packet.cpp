@@ -1,4 +1,6 @@
 #include <string.h>
+
+#include "WHILL.h"
 #include "packet.h"
 
 namespace WHILL{

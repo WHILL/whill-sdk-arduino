@@ -5,6 +5,8 @@
 
 namespace WHILL{
 
+  class ModelCR;
+
   class Packet{
 
     private:
@@ -36,6 +38,14 @@ namespace WHILL{
 
   class PacketParser{
 
+      private:
+        ModelCR* whill = NULL;
+        void parseDataset0(Packet* packet);
+        void parseDataset1(Packet* packet);
+
+      public:
+        void setWHILLReceiver(ModelCR* whill);
+        int parsePacket(Packet* packet); 
 
   };
 
@@ -59,9 +69,6 @@ namespace WHILL{
         void register_callback(void (*callback)());
         void register_callback(PacketParser* obj,void (PacketParser::*method)());
   };
-
-  int parsePacket(Packet* packet);
-
 
 };
 
