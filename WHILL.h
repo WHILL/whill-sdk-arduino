@@ -37,7 +37,7 @@ class WHILL{
         public:
             const static unsigned char PROTOCOL_SIGN = 0xAF;
 
-            const static int MAX_LENGTH   = 20;
+            const static int MAX_LENGTH   = 35;
             const static int MAX_PAYLOAD  = MAX_LENGTH - 3;  // protocol_sign,len,cs
 
             Packet();
@@ -123,9 +123,14 @@ public:
     void disableUpdate();
 
     void register_callback();
-
-    void setJoystick();
     void refresh();
+
+    //WHILL commands
+    void startSendingData0(unsigned int interval_ms,unsigned char speed_mode);
+    void startSendingData1(unsigned int interval_ms);
+    void setJoystick(int x,int y);
+    void setPower(bool power);
+    void SetBatteryVoltaegeOut(bool out);
 
 };
 

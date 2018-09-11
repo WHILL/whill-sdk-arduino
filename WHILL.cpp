@@ -10,19 +10,21 @@ WHILL::WHILL(SoftwareSerial* ss){
 
     receiver.register_callback(&parser,&PacketParser::parsePacket);
 
-    unsigned char payload[] = {0x00,0x00,0x00,0x00};
-    Packet packet(payload,sizeof(payload));
-    packet.build();
+    startSendingData1(1000);
 
-    unsigned char data[30];
-    int size = packet.getRaw(data);
+        // unsigned char payload[] = {0x00,0x00,0x00,0x00};
+        // Packet packet(payload,sizeof(payload));
+        // packet.build();
 
-    for(int i=0;i<size;i++){
-        Serial.print("0x");
-        Serial.println(data[i],HEX);
-    }
+        // unsigned char data[30];
+        // int size = packet.getRaw(data);
 
-    transferPacket(&packet);
+        // for(int i=0;i<size;i++){
+        //     Serial.print("0x");
+        //     Serial.println(data[i],HEX);
+        // }
+
+        // transferPacket(&packet);
 }
 
 int WHILL::read(unsigned char* byte){    // Implementation of read interaface to WHILL

@@ -16,7 +16,6 @@ int WHILL::PacketReceiver::push(unsigned char data){
 
     buf[index] = data;
 
-
     if(index >= 1 && remaining_bytes() == 0){
         call_callback();
         index = 0;
@@ -55,6 +54,7 @@ bool WHILL::PacketReceiver::call_callback(){
 
     Packet packet;
     packet.setRaw(buf,index+1);
+
 
     if(callback != NULL){
         this->callback();
