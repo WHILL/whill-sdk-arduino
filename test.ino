@@ -1,14 +1,15 @@
-#include "packet.h"
+#include "WHILL.h"
+#include <SoftwareSerial.h>
 
 
-void callback(){
-  Serial.println("callback");
-}
+SoftwareSerial ss(7,6);
+WHILL whill(&ss);
+
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(38400);
   Serial.println("Start");
+  Serial.begin(115200);
 
 //   unsigned char payload[] = {0x00,0x01,0x00,20,0};
 //   WHILL::Packet packet(payload,sizeof(payload));
@@ -54,20 +55,22 @@ void setup() {
 //   }
 
 
-    unsigned char data[] = {0xAF,0x03,0x01,0x02,0x03,0xFF,0xFF,0xAF,0x04,0x01,0x02,0x03,0x04};
+    // unsigned char data[] = {0xAF,0x03,0x01,0x02,0x03,0xFF,0xFF,0xAF,0x04,0x01,0x02,0x03,0x04};
 
-    WHILL::PacketReceiver receiver;
+    // WHILL::PacketReceiver receiver;
 
-    receiver.register_callback(callback);
+    // receiver.register_callback(callback);
 
-    for(int i=0;i<sizeof(data);i++){
-        Serial.println(data[i],HEX);
-        receiver.push(data[i]);
-    }
+    // for(int i=0;i<sizeof(data);i++){
+    //     Serial.println(data[i],HEX);
+    //     receiver.push(data[i]);
+    // }
+
+
  
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-
+  whill.refresh();
 }
