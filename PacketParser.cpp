@@ -2,6 +2,10 @@
 
 #include <Arduino.h>
 
+void WHILL::PacketParser::setParent(WHILL* whill){
+  this->whill = whill;
+}
+
 int WHILL::PacketParser::parsePacket(Packet* packet){
   if(!(packet->is_valid()))return -1;
 
@@ -16,7 +20,9 @@ int WHILL::PacketParser::parsePacket(Packet* packet){
         break;
 
       case 0x52:   // Response of power WHILL on.
-        //if(whill!=NULL) whill->powered_on();
+        if(whill!=NULL){
+          whill->fire_callback(CALLBACK_POWER_ON);
+        }
         break;
 
       default:
@@ -29,9 +35,11 @@ int WHILL::PacketParser::parsePacket(Packet* packet){
 
 
 void WHILL::PacketParser::parseDataset0(Packet* packet){
-  Serial.println("Parse Data0");
+  if(whill == NULL) return;
+  whill->fire_callback(CALLBACK_DATA0);
 }
 
 void WHILL::PacketParser::parseDataset1(Packet* packet){
-  Serial.println("Parse Data1");
+  if(whill == NULL)return;
+  whill->fire_callback(CALLBACK_DATA1);
 }

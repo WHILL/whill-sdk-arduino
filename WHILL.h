@@ -1,34 +1,13 @@
 #ifndef __WHILL_H__
 #define __WHILL_H__
 
+#include <Arduino.h>
 #include <stdio.h>
 
 class SoftwareSerial;
 
 
-// typedef struct {
-
-// } WHILL::Accelometer;
-
-// typedef struct {
-
-// } Gyro;
-
-// typedef struct {
-
-// } Joy;
-
-// typedef struct {
-
-// } Battery;
-
-// typedef struct {
-
-// } Motor;
-
-
 class WHILL{
-
 
     class Packet{
 
@@ -69,6 +48,7 @@ class WHILL{
             void parseDataset1(WHILL::Packet* packet);
 
         public:
+            void setParent(WHILL* whill);
             void setWHILLReceiver(WHILL* whill);
             int parsePacket(Packet* packet); 
 
@@ -108,34 +88,58 @@ private:
     void receivePacket();
     void transferPacket(Packet* packet);
 
-    void updateData0();
-    void updateData1();
-    void powered_on();
-
     PacketReceiver receiver;
     PacketParser   parser;
+
 
 public:
 
     WHILL(SoftwareSerial* ss);
+ 
+    //Callback
+    enum EVENT{
+        CALLBACK_DATA0,
+        CALLBACK_DATA1,
+        CALLBACK_POWER_ON,
+        EVENT_SIZE
+    }; 
+    typedef void (*Callback)(WHILL*);
+    Callback callback_functions[EVENT_SIZE] = {NULL};
+    void register_callback(Callback method,EVENT event);
+    void fire_callback(EVENT event);
 
-    void enableUpdate(int dataset_number);
-    void disableUpdate();
-
-    void register_callback();
     void refresh();
+
+    int virtual_joy_x = 0;
+    int virtual_joy_y = 0;
+
+    void keep_joy_delay(unsigned long ms);
+    void delay(unsigned long ms);
+
+    typedef struct{
+        unsigned char forward_spped;
+        unsigned char forward_acceleration;
+        unsigned char forward_deceleration;
+
+        unsigned char reverse_speed;
+        unsigned char reverse_acceleration;
+        unsigned char reverse_deceleration;
+
+        unsigned char turn_speed;
+        unsigned char turn_acceleration;
+        unsigned char turn_deceleration;       
+    }SpeedProfile;
 
     //WHILL commands
     void startSendingData0(unsigned int interval_ms,unsigned char speed_mode);
     void startSendingData1(unsigned int interval_ms);
+    void stopSendingData();
     void setJoystick(int x,int y);
     void setPower(bool power);
-    void SetBatteryVoltaegeOut(bool out);
+    void setBatteryVoltaegeOut(bool out);
+    void setSpeedProfile(SpeedProfile* profile,unsigned char speed_mode);
 
 };
-
-
-
 
 
 #endif

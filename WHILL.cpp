@@ -8,23 +8,9 @@ WHILL::WHILL(SoftwareSerial* ss){
     this->serial = ss;
     this->serial->begin(38400);
 
+    parser.setParent(this);
+
     receiver.register_callback(&parser,&PacketParser::parsePacket);
-
-    startSendingData1(1000);
-
-        // unsigned char payload[] = {0x00,0x00,0x00,0x00};
-        // Packet packet(payload,sizeof(payload));
-        // packet.build();
-
-        // unsigned char data[30];
-        // int size = packet.getRaw(data);
-
-        // for(int i=0;i<size;i++){
-        //     Serial.print("0x");
-        //     Serial.println(data[i],HEX);
-        // }
-
-        // transferPacket(&packet);
 }
 
 int WHILL::read(unsigned char* byte){    // Implementation of read interaface to WHILL
@@ -61,16 +47,39 @@ void WHILL::receivePacket(){
     }
 }
 
+void WHILL::keep_joy_delay(unsigned long ms){
+    unsigned long counter = 0;
+    while(counter < ms){
+        refresh();
+        if(counter%80 == 0){
+            this->setJoystick(virtual_joy_x,virtual_joy_y);
+        }
+        counter++;
+        ::delay(1);
+    }  
+}
+
+
+void WHILL::delay(unsigned long ms){
+    while(ms>0){
+        refresh();
+        ms--;
+        ::delay(1);
+    }
+}
 
 
 void WHILL::refresh(){
     // Scan the data from interface
-    //unsigned char read_data;
-    // while(this->read(&read_data) != -1){
-    //     receiver.push((unsigned char)read_data);
-    // }
    receivePacket();
 }
 
 
+void WHILL::register_callback(Callback method,EVENT event){
+    callback_functions[event] = method;
+}
 
+void WHILL::fire_callback(EVENT event){
+    if(callback_functions[event]==NULL)return;
+    callback_functions[event](this);
+}
