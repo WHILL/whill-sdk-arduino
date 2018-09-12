@@ -13,6 +13,7 @@ WHILL::WHILL(SoftwareSerial* ss){
     receiver.register_callback(&parser,&PacketParser::parsePacket);
 }
 
+
 int WHILL::read(unsigned char* byte){    // Implementation of read interaface to WHILL
     if(serial == NULL) return -1;
     
@@ -29,6 +30,9 @@ int WHILL::write(unsigned char byte){   // Implementation of write interface to 
     serial->write(byte);
 }
 
+void WHILL::begin(unsigned int interval){
+    this->startSendingData1(interval);
+}
 
 void WHILL::transferPacket(Packet* packet){
     unsigned char buffer[Packet::MAX_LENGTH] = {0};
@@ -52,7 +56,7 @@ void WHILL::keep_joy_delay(unsigned long ms){
     while(counter < ms){
         refresh();
         if(counter%80 == 0){
-            this->setJoystick(virtual_joy_x,virtual_joy_y);
+            this->setJoystick(virtual_joy.x,virtual_joy.y);
         }
         counter++;
         ::delay(1);

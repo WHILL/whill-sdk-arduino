@@ -38,8 +38,8 @@ void WHILL::setPower(bool power){
 }
 
 void WHILL::setJoystick(int x,int y){
-    virtual_joy_x = x;
-    virtual_joy_y = y;
+    virtual_joy.x = x;
+    virtual_joy.y = y;
 
      unsigned char payload[] = {0x03,
                                 0x00,   // Enable Host control

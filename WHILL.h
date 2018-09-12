@@ -95,6 +95,7 @@ private:
 public:
 
     WHILL(SoftwareSerial* ss);
+    void begin(unsigned int interval);
  
     //Callback
     enum EVENT{
@@ -109,9 +110,6 @@ public:
     void fire_callback(EVENT event);
 
     void refresh();
-
-    int virtual_joy_x = 0;
-    int virtual_joy_y = 0;
 
     void keep_joy_delay(unsigned long ms);
     void delay(unsigned long ms);
@@ -129,6 +127,37 @@ public:
         unsigned char turn_acceleration;
         unsigned char turn_deceleration;       
     }SpeedProfile;
+
+    typedef struct{
+        int x;
+        int y;
+        int z;
+    }Data3D;
+
+    typedef struct{
+        int x;
+        int y;
+    }Joy;
+
+    typedef struct{
+        unsigned char level;
+        signed long current;
+    }Battery;
+
+    typedef struct{
+        float angle;
+        int speed;
+    }Motor;
+
+    Data3D  accelerometer = {0};
+    Data3D  gyro          = {0};
+    Joy     virtual_joy   = {0};
+    Joy     joy           = {0};
+    Battery battery       = {0};
+    Motor   left_motor    = {0};
+    Motor   right_motor   = {0};
+    bool    power         = false;
+    int     speed_mode_indicator = -1;
 
     //WHILL commands
     void startSendingData0(unsigned int interval_ms,unsigned char speed_mode);

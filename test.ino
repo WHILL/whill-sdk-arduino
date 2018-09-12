@@ -13,6 +13,8 @@ void callback_data0(WHILL* caller)
 void callback_data1(WHILL* caller)
 {
   Serial.println("call1");
+  Serial.println(caller->joy.x);
+  Serial.println(caller->joy.y);
 }
 
 void callback_powered_on(WHILL* caller)
@@ -26,8 +28,7 @@ void setup() {
   whill.register_callback(callback_data0,WHILL::EVENT::CALLBACK_DATA0);
   whill.register_callback(callback_powered_on,WHILL::EVENT::CALLBACK_POWER_ON);
 
-  //whill.startSendingData0(1000,0);
-  whill.stopSendingData();
+  whill.begin(100);
 
   Serial.println("Start");
   Serial.begin(115200);
@@ -36,8 +37,8 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   whill.refresh();
-  whill.setPower(true);
-  whill.delay(5000);
-  whill.setPower(false);
-  whill.delay(2000);
+  // whill.setPower(true);
+  // whill.delay(5000);
+  // whill.setPower(false);
+  // whill.delay(2000);
 }
