@@ -107,3 +107,6 @@ Current selected speed mode.
 
 By registering callback functions, You can hook at status is updated.  
 See Example: [callback.ino](https://github.com/WHILL/whill-sdk-arduino/blob/master/examples/callback/callback.ino)
+
+## License
+MIT License

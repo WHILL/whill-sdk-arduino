@@ -12,9 +12,9 @@ void loop() {
   // put your main code here, to run repeatedly:
   whill.refresh();
 
-  whill.setJoystick(50,0);    // Turn Right
-  whill.keep_joy_delay(1000);
+  whill.setJoystick(50,0);      // Turn Right
+  whill.keep_joy_delay(1000);   // Keep sending joystick data
 
-  whill.setJoystick(-50,0);   // Turn Left
-  whill.keep_joy_delay(1000);
+  whill.setJoystick(-50,0);     // Turn Left
+  whill.keep_joy_delay(1000);   // Keep sending joystick data
 }
