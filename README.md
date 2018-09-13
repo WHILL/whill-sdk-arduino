@@ -1,6 +1,9 @@
 # whill-sdk-arduino
 A simple WHILL Model CR Library for Arduino.
 
+<img src="https://user-images.githubusercontent.com/2618822/45492944-89421c00-b7a8-11e8-9c92-22aa3f28f6e4.png" width=30%>
+
+
 ## Requirements
 - WHILL **Model CR**  (Normal **Model C** does not support serial communication.)
 - An Arduino device suports SoftwareSerial. e.g. Arduino Uno.
@@ -102,5 +105,5 @@ Current selected speed mode.
 
 ### Callback
 
-By registering callback functions,  
-See Examples.
+By registering callback functions, You can hook at status is updated.  
+See Example: [callback.ino](https://github.com/WHILL/whill-sdk-arduino/blob/master/examples/callback/callback.ino)
