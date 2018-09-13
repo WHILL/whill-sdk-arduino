@@ -16,10 +16,10 @@ WHILL::WHILL(SoftwareSerial* ss){
 
 int WHILL::read(unsigned char* byte){    // Implementation of read interaface to WHILL
     if(serial == NULL) return -1;
-    
+
     int data = serial->read();
     if(data == -1) return -1;  //Nothing read
-    
+
     *byte = data;
 
     return 1;
@@ -52,20 +52,19 @@ void WHILL::receivePacket(){
 }
 
 void WHILL::keep_joy_delay(unsigned long ms){
-    unsigned long counter = 0;
-    while(counter < ms){
+    while(ms > 0){
         refresh();
-        if(counter%80 == 0){
+        if(ms%100 == 0){
             this->setJoystick(virtual_joy.x,virtual_joy.y);
         }
-        counter++;
+        ms--;
         ::delay(1);
     }  
 }
 
 
 void WHILL::delay(unsigned long ms){
-    while(ms>0){
+    while(ms > 0){
         refresh();
         ms--;
         ::delay(1);

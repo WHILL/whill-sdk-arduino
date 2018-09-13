@@ -1,6 +1,4 @@
-#include "packet.h"
-
-#include <Arduino.h>
+#include "WHILL.h"
 
 void WHILL::PacketParser::setParent(WHILL* whill){
   this->whill = whill;

@@ -30,8 +30,8 @@ void WHILL::stopSendingData(){
 }
 
 void WHILL::setPower(bool power){
-     unsigned char payload[] = {0x02,
-                                (unsigned char)(power ? 0x01 : 0x00)};
+    unsigned char payload[] = {0x02,
+                               (unsigned char)(power ? 0x01 : 0x00)};
     Packet packet(payload,sizeof(payload));
     packet.build();
     transferPacket(&packet);
@@ -41,10 +41,10 @@ void WHILL::setJoystick(int x,int y){
     virtual_joy.x = x;
     virtual_joy.y = y;
 
-     unsigned char payload[] = {0x03,
-                                0x00,   // Enable Host control
-                                (unsigned char)(char)(y),
-                                (unsigned char)(char)(x)};
+    unsigned char payload[] = {0x03,
+                               0x00,   // Enable Host control
+                               (unsigned char)(char)(y),
+                               (unsigned char)(char)(x)};
     Packet packet(payload,sizeof(payload));
     packet.build();
     transferPacket(&packet);

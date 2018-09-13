@@ -1,7 +1,4 @@
-#include <string.h>
-
 #include "WHILL.h"
-#include "packet.h"
 
 
 WHILL::Packet::Packet(){

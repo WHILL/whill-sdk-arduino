@@ -5,14 +5,9 @@ SoftwareSerial ss(7,6);
 WHILL whill(&ss);
 
 
-void callback_data0(WHILL* caller)
-{
-  Serial.println("call0");
-}
-
 void callback_data1(WHILL* caller)
 {
-  Serial.println("call1");
+  Serial.println("Updated");
   Serial.println(caller->joy.x);
   Serial.println(caller->joy.y);
 }
@@ -24,21 +19,16 @@ void callback_powered_on(WHILL* caller)
 
 void setup() {
   // put your setup code here, to run once:
+
+  //Register callbacks
   whill.register_callback(callback_data1,WHILL::EVENT::CALLBACK_DATA1);
-  whill.register_callback(callback_data0,WHILL::EVENT::CALLBACK_DATA0);
   whill.register_callback(callback_powered_on,WHILL::EVENT::CALLBACK_POWER_ON);
 
-  whill.begin(100);
-
-  Serial.println("Start");
-  Serial.begin(115200);
+  whill.begin(200);   // Set sending interval(ms) of WHILL
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   whill.refresh();
-  // whill.setPower(true);
-  // whill.delay(5000);
-  // whill.setPower(false);
-  // whill.delay(2000);
 }
+
