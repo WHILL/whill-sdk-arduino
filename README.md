@@ -7,7 +7,7 @@ A simple WHILL Model CR Library for Arduino.
 ## Requirements
 - WHILL **Model CR**  (Normal **Model C** does not support serial communication.)
 - An Arduino device suports SoftwareSerial. e.g. Arduino Uno.
-- RS232C Shield
+- RS232C Shield  (Recommended:https://www.seeedstudio.com/RS232-Shield-p-1910.html)
 
 
 
