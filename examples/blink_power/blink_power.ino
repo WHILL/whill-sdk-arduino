@@ -6,12 +6,14 @@ WHILL whill(&ss);
 
 void callback_powered_on(WHILL* caller)
 {
-  // This function is called when receive Joy/Accelerometer/Gyro,etc.
+  // This function is called when powered on via setPower() 
   Serial.print("powered_on");
 }
 
 void setup() {
   // put your setup code here, to run once:
+
+  Serial.begin(9600);
 
   //Register callbacks
   whill.register_callback(callback_powered_on,WHILL::EVENT::CALLBACK_POWER_ON);
