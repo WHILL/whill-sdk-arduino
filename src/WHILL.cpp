@@ -52,6 +52,8 @@ int WHILL::read(unsigned char* byte){    // Implementation of read interaface to
 int WHILL::write(unsigned char byte){   // Implementation of write interface to WHILL
     if(serial == NULL) return -1;
     serial->write(byte);
+
+    return 1;
 }
 
 void WHILL::begin(unsigned int interval){
