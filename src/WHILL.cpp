@@ -22,14 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <SoftwareSerial.h>
+#include <HardwareSerial.h>
 #include <Arduino.h>
 
 #include "WHILL.h"
 
 
-WHILL::WHILL(SoftwareSerial* ss){
-    this->serial = ss;
+WHILL::WHILL(HardwareSerial* hs){
+    this->serial = hs;
     this->serial->begin(38400);
 
     parser.setParent(this);

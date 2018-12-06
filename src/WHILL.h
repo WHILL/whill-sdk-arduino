@@ -26,9 +26,10 @@ THE SOFTWARE.
 #define __WHILL_H__
 
 #include <Arduino.h>
+#include <HardwareSerial.h>
 #include <stdio.h>
 
-class SoftwareSerial;
+class HardwareSerial;
 
 
 class WHILL{
@@ -103,7 +104,7 @@ class WHILL{
 
 
 private:
-    SoftwareSerial* serial;
+    HardwareSerial* serial;
 
     // Custom One byte transceiver
     int read(unsigned char* byte);
@@ -118,7 +119,7 @@ private:
 
 public:
 
-    WHILL(SoftwareSerial* ss);
+    WHILL(HardwareSerial* ss);
     void begin(unsigned int interval);
  
     //Callback
