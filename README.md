@@ -1,5 +1,7 @@
 # whill-sdk-arduino
-A simple WHILL Model CR Library for Arduino.
+A simple [WHILL Model CR](https://whill.jp/model-cr) Library for Arduino.<br>
+We also have [a FAQ and developers community website](https://whill.zendesk.com/hc/ja) for current and potential Model CR users.<br>
+For general questions and requests, please visit https://whill.zendesk.com/hc/ja .
 
 <img src="https://user-images.githubusercontent.com/2618822/45492944-89421c00-b7a8-11e8-9c92-22aa3f28f6e4.png" width=30%>
 
