@@ -1,0 +1,3 @@
+[submodule "src/libwhill"]
+	path = src/libwhill
+	url = git@github.com:WHILL/libwhill.git
