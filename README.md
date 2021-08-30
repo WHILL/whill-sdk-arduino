@@ -63,22 +63,23 @@ Enable/Disable power supply to the interface connector. `True` to enable power s
 
 ### Sensors and Status
 
-### Accelerometer
+### Accelerometer [Not Supported]
 ```cpp
 int WHILL::accelerometer.x
 int WHILL::accelerometer.y
 int WHILL::accelerometer.z
 ```
 Accelerometer mounted on body.
+Note: The IMU inside Model CR is not recommended to be used due to its low accuracy. Data is sent but not parsed.
 
-#### Gyro
+#### Gyro [Not Supported]
 ```cpp
 int WHILL::gyro.x
 int WHILL::gyro.y
 int WHILL::gyro.z
 ```
 Gyro sensor mounted on body.
-
+Note: The IMU inside Model CR is not recommended to be used due to its low accuracy. Data is sent but not parsed.
 
 #### Battery
 ```cpp
