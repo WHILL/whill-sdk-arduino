@@ -22,93 +22,88 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-#include <HardwareSerial.h>
-#include <Arduino.h>
-
 #include "WHILL.h"
 
+#include <Arduino.h>
+#include <HardwareSerial.h>
 
-WHILL::WHILL(HardwareSerial* hs){
+WHILL::WHILL(HardwareSerial* hs) {
     this->serial = hs;
     this->serial->begin(38400);
 
     parser.setParent(this);
 
-    receiver.register_callback(&parser,&PacketParser::parsePacket);
+    receiver.register_callback(&parser, &PacketParser::parsePacket);
 }
 
-
-int WHILL::read(unsigned char* byte){    // Implementation of read interaface to WHILL
-    if(serial == NULL) return -1;
+int WHILL::read(
+    unsigned char* byte) {  // Implementation of read interaface to WHILL
+    if (serial == NULL) return -1;
 
     int data = serial->read();
-    if(data == -1) return -1;  //Nothing read
+    if (data == -1) return -1;  // Nothing read
 
     *byte = data;
 
     return 1;
 }
 
-int WHILL::write(unsigned char byte){   // Implementation of write interface to WHILL
-    if(serial == NULL) return -1;
+int WHILL::write(
+    unsigned char byte) {  // Implementation of write interface to WHILL
+    if (serial == NULL) return -1;
     serial->write(byte);
 
     return 1;
 }
 
-void WHILL::begin(unsigned int interval){
-    this->startSendingData1(interval);
-}
+void WHILL::begin(unsigned int interval) { this->startSendingData1(interval); }
 
-void WHILL::transferPacket(Packet* packet){
+void WHILL::transferPacket(Packet* packet) {
     unsigned char buffer[Packet::MAX_LENGTH] = {0};
     int size = packet->getRaw(buffer);
-    if(size > 1){
-        for(int i = 0; i < size;i++){
+    if (size > 1) {
+        for (int i = 0; i < size; i++) {
             write(buffer[i]);
         }
     }
 }
 
-void WHILL::receivePacket(){
+void WHILL::receivePacket() {
     unsigned char data;
-    while(read(&data) != -1){
+    while (read(&data) != -1) {
         receiver.push(data);
     }
 }
 
-void WHILL::keep_joy_delay(unsigned long ms){
-    while(ms > 0){
+void WHILL::keep_joy_delay(unsigned long ms) {
+    while (ms > 0) {
         refresh();
-        if(ms%100 == 0){
-            this->setJoystick(virtual_joy.x,virtual_joy.y);
+        if (ms % 100 == 0) {
+            this->setJoystick(virtual_joy.x, virtual_joy.y);
         }
         ms--;
         ::delay(1);
-    }  
+    }
 }
 
-
-void WHILL::delay(unsigned long ms){
-    while(ms > 0){
+void WHILL::delay(unsigned long ms) {
+    while (ms > 0) {
         refresh();
         ms--;
         ::delay(1);
     }
 }
 
-
-void WHILL::refresh(){
+void WHILL::refresh() {
     // Scan the data from interface
-   receivePacket();
+    receivePacket();
 }
 
-
-void WHILL::register_callback(Callback method,EVENT event){
+void WHILL::register_callback(Callback method, EVENT event) {
     callback_functions[event] = method;
 }
 
-void WHILL::fire_callback(EVENT event){
-    if(callback_functions[event]==NULL)return;
+void WHILL::fire_callback(EVENT event) {
+    if (callback_functions[event] == NULL) return;
     callback_functions[event](this);
 }

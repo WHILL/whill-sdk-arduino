@@ -1,5 +1,7 @@
 # whill-sdk-arduino
-A simple WHILL Model CR Library for Arduino.
+A simple [WHILL Model CR](https://whill.jp/model-cr) Library for Arduino.<br>
+We also have [a FAQ and developers community website](https://whill.zendesk.com/hc/ja) for current and potential Model CR users.<br>
+For general questions and requests, please visit https://whill.zendesk.com/hc/ja .
 
 <img src="https://user-images.githubusercontent.com/2618822/45492944-89421c00-b7a8-11e8-9c92-22aa3f28f6e4.png" width=30%>
 
@@ -61,22 +63,23 @@ Enable/Disable power supply to the interface connector. `True` to enable power s
 
 ### Sensors and Status
 
-### Accelerometer
+### Accelerometer [Not Supported]
 ```cpp
 int WHILL::accelerometer.x
 int WHILL::accelerometer.y
 int WHILL::accelerometer.z
 ```
 Accelerometer mounted on body.
+Note: The IMU inside Model CR is not recommended to be used due to its low accuracy. Data is sent but not parsed.
 
-#### Gyro
+#### Gyro [Not Supported]
 ```cpp
 int WHILL::gyro.x
 int WHILL::gyro.y
 int WHILL::gyro.z
 ```
 Gyro sensor mounted on body.
-
+Note: The IMU inside Model CR is not recommended to be used due to its low accuracy. Data is sent but not parsed.
 
 #### Battery
 ```cpp
