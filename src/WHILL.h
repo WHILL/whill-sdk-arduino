@@ -170,6 +170,7 @@ class WHILL {
     void setPower(bool power);
     void setBatteryVoltaegeOut(bool out);
     void setSpeedProfile(SpeedProfile* profile, unsigned char speed_mode);
+    void setVelocity(int y, int x);
 };
 
 #endif
