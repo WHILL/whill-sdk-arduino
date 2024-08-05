@@ -75,6 +75,7 @@ void WHILL::setJoystick(int x, int y) {
 
 void WHILL::setSpeedProfile(SpeedProfile* profile, unsigned char speed_mode) {
     unsigned char payload[] = {0x04,
+                               speed_mode,
                                profile->forward_spped,
                                profile->forward_acceleration,
                                profile->forward_deceleration,
