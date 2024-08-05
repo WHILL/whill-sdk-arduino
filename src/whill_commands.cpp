@@ -28,8 +28,8 @@ void WHILL::startSendingData0(unsigned int interval_ms,
                               unsigned char speed_mode) {
     unsigned char payload[] = {0x00,  // Start Sending Data
                                0x00,  // Data0 (Speed profiles)
-                               (unsigned char)(interval_ms << 8 & 0xFF),
-                               (unsigned char)(interval_ms << 0 & 0xFF),
+                               (unsigned char)(interval_ms >> 8 & 0xFF),
+                               (unsigned char)(interval_ms >> 0 & 0xFF),
                                speed_mode};
     Packet packet(payload, sizeof(payload));
     packet.build();
@@ -39,8 +39,8 @@ void WHILL::startSendingData0(unsigned int interval_ms,
 void WHILL::startSendingData1(unsigned int interval_ms) {
     unsigned char payload[] = {0x00,  // Start Sending Data
                                0x01,  // Data1  (Sensors)
-                               (unsigned char)(interval_ms << 8 & 0xFF),
-                               (unsigned char)(interval_ms << 0 & 0xFF), 0x00};
+                               (unsigned char)(interval_ms >> 8 & 0xFF),
+                               (unsigned char)(interval_ms >> 0 & 0xFF), 0x00};
     Packet packet(payload, sizeof(payload));
     packet.build();
     transferPacket(&packet);
