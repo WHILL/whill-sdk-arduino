@@ -95,3 +95,15 @@ void WHILL::setBatteryVoltaegeOut(bool enable) {
     packet.build();
     transferPacket(&packet);
 }
+
+void WHILL::setVelocity(int y, int x) {
+    unsigned char payload[] = {0x08,
+                               0x00,  // Enable Host control
+                               (unsigned char)(y >> 8 & 0xFF),
+                               (unsigned char)(y & 0xFF),
+                               (unsigned char)(x >> 8 & 0xFF),
+                               (unsigned char)(x & 0xFF)};
+    Packet packet(payload, sizeof(payload));
+    packet.build();
+    transferPacket(&packet);
+}
