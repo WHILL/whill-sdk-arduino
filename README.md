@@ -48,6 +48,12 @@ WHILL::setBatteryVoltaegeOut(bool)
 Enable/Disable power supply to the interface connector. `True` to enable power supply. <br>
 **Note:** This command is for **Model CR** only.
 
+```cpp
+WHILL::setBatterySaving(int low_battery_level, bool sounds_buzzer)
+```
+Configure battery protection settings. low_battery_level is battery charge level to engage the standby mode with range 1 ~ 90. sounds_buzzer is Enable/Disable a buzzing sound at the battery charge level of low_battery_level + 10 percentage points. True to enable a buzzing sound when battery level low. As default, low_battery_level is 19 and sounds_buzzer is True. <br>
+**Note:** This command is for **Model CR2** only.
+
 
 ### Motor Control
 

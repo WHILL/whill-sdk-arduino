@@ -22,6 +22,7 @@ stopSendingData	        KEYWORD2
 setJoystick	            KEYWORD2
 setPower	            KEYWORD2
 setBatteryVoltaegeOut	KEYWORD2
+setBatterySaving	    KEYWORD2
 setSpeedProfile	        KEYWORD2
 setVelocity	            KEYWORD2
 
