@@ -97,6 +97,13 @@ void WHILL::setBatteryVoltaegeOut(bool enable) {
     transferPacket(&packet);
 }
 
+void WHILL::setBatterySaving(int low_battery_level, bool sounds_buzzer) {
+    unsigned char payload[] = {0x06, (unsigned char)low_battery_level, (unsigned char)(sounds_buzzer ? 0x01 : 0x00)};
+    Packet packet(payload, sizeof(payload));
+    packet.build();
+    transferPacket(&packet);
+}
+
 void WHILL::setVelocity(int y, int x) {
     unsigned char payload[] = {0x08,
                                0x00,  // Enable Host control

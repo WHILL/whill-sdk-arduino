@@ -168,6 +168,7 @@ class WHILL {
     void setJoystick(int x, int y);
     void setPower(bool power);
     void setBatteryVoltaegeOut(bool out);
+    void setBatterySaving(int low_battery_level, bool sounds_buzzer);
     void setSpeedProfile(SpeedProfile* profile, unsigned char speed_mode);
     void setVelocity(int y, int x);
 };
