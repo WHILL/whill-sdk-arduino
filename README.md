@@ -1,8 +1,8 @@
-# whill-sdk-arduino
+# whill-sdk-arduino for ESP32
 
 ## About
 
-The "whill-sdk-arduino" is a simple Arduino library for Model CR series. <br>
+The "whill-sdk-arduino for ESP32" is a simple Arduino library for Model CR series. <br>
 
 <img width=22% title="WHILL Model CR2" src="https://github.com/WHILL/Model_CR_Technical_Support/assets/129816934/387a8aac-3808-4727-895d-9857059ee342">
 <img width=24% title="Wheeled Robot Base" src="https://github.com/WHILL/Model_CR_Technical_Support/assets/129816934/6a63ed45-9e0c-40ca-b71c-8dff614af141">
@@ -13,7 +13,7 @@ We also have [Model CR Series Technical Support](https://github.com/WHILL/Model_
 ## Requirements
 
 - Host device
-  - An Arduino device suports SoftwareSerial. e.g. Arduino Uno.
+  - An Arduino device suports HardwareSerial. e.g. ESP32.
 - Target device
   - Model CR series (Normal **Model C** or **Model C2** does not support serial communication.)
 - Connector
@@ -30,9 +30,9 @@ Download this repository and place on your Arduino library folder.
 ### Initialize
 
 ```cpp
-WHILL(SoftwareSerial*)
+WHILL(HardwareSerial*)
 ```
-Initialize WHILL instance with SoftwareSerial.
+Initialize WHILL instance with HardwareSerial.
 
 
 ### Power Control
@@ -117,7 +117,7 @@ Current selected speed mode.
 ### Callback
 
 By registering callback functions, you can hook at status is updated. <br>
-*See Example:* [callback.ino](https://github.com/WHILL/whill-sdk-arduino/blob/master/examples/callback/callback.ino)
+*See Example:* [callback.ino](https://github.com/WHILL/whill-sdk-arduino/blob/esp32/examples/callback/callback.ino)
 
 
 ## License
