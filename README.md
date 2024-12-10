@@ -19,6 +19,8 @@ We also have [Model CR Series Technical Support](https://github.com/WHILL/Model_
 - Connector
   - RS232C Shield  ([example](https://www.seeedstudio.com/RS232-Shield-p-1910.html))
 
+**Note:** If you use a device supports HardwareSerial, the [esp32](https://github.com/WHILL/whill-sdk-arduino/tree/esp32) branch is available.
+
 
 ## Getting Started
 
