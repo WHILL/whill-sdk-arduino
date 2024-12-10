@@ -29,8 +29,6 @@ THE SOFTWARE.
 #include <HardwareSerial.h>
 #include <stdio.h>
 
-class HardwareSerial;
-
 class WHILL {
     class Packet {
        private:
