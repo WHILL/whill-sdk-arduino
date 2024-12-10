@@ -26,9 +26,8 @@ THE SOFTWARE.
 #define __WHILL_H__
 
 #include <Arduino.h>
+#include <SoftwareSerial.h>
 #include <stdio.h>
-
-class SoftwareSerial;
 
 class WHILL {
     class Packet {

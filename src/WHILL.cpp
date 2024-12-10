@@ -24,9 +24,6 @@ THE SOFTWARE.
 
 #include "WHILL.h"
 
-#include <Arduino.h>
-#include <SoftwareSerial.h>
-
 WHILL::WHILL(SoftwareSerial* ss) {
     this->serial = ss;
     this->serial->begin(38400);
