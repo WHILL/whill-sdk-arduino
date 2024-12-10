@@ -20,9 +20,10 @@ startSendingData0	    KEYWORD2
 startSendingData1	    KEYWORD2
 stopSendingData	        KEYWORD2
 setJoystick	            KEYWORD2
-setPower	            KEYWORD2	
+setPower	            KEYWORD2
 setBatteryVoltaegeOut	KEYWORD2
 setSpeedProfile	        KEYWORD2
+setVelocity	            KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
