@@ -81,13 +81,13 @@ bool WHILL::receivePacket() {
 void WHILL::clearCache() {
     joy.y = 0;
     joy.x = 0;
+    battery.current = 0;
     right_motor.speed = 0;
     left_motor.speed = 0;
     power = false;
 
     // Never set to zero, as these are power state independent.
     // battery.level = 0;
-    // battery.current = 0;
     // right_motor.angle = 0;
     // left_motor.angle = 0;
     // speed_mode_indicator = 0;
