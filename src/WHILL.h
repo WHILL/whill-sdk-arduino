@@ -97,11 +97,15 @@ class WHILL {
     int read(unsigned char* byte);
     int write(unsigned char byte);
 
-    void receivePacket();
+    bool receivePacket();
     void transferPacket(Packet* packet);
 
     PacketReceiver receiver;
     PacketParser parser;
+
+    void clearCache();
+    unsigned long last_received_time = 0;
+    unsigned int interval_ms = 200;
 
    public:
     WHILL(HardwareSerial* hs);
