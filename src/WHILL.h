@@ -54,7 +54,6 @@ class WHILL {
 
         bool setRaw(unsigned char* raw, int len);
         int getRaw(unsigned char* raw);
-        void build();
     };
 
     class PacketParser {

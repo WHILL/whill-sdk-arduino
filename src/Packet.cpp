@@ -27,14 +27,14 @@ THE SOFTWARE.
 WHILL::Packet::Packet() {
     protocol_sign = 0xAF;
     len = 1;
-    build();
+    cs = getCalculatedCS();
 }
 
 WHILL::Packet::Packet(unsigned char payload[], int size) {
     protocol_sign = 0xAF;
     len = size + 1;
     memcpy(this->payload, payload, size);
-    build();
+    cs = getCalculatedCS();
 }
 
 bool WHILL::Packet::is_valid() { return getCalculatedCS() == cs; }
@@ -70,8 +70,6 @@ unsigned char WHILL::Packet::getCalculatedCS() {
 
     return cs;
 }
-
-void WHILL::Packet::build() { this->cs = getCalculatedCS(); }
 
 int WHILL::Packet::getRaw(unsigned char* raw) {
     int whole_length = 0;
