@@ -88,9 +88,13 @@ void WHILL::clearCache() {
 
     // Never set to zero, as these are power state independent.
     // battery.level = 0;
+    // battery.save.level = 0;
+    // battery.save.buzzer = false;
     // right_motor.angle = 0;
     // left_motor.angle = 0;
     // speed_mode_indicator = 0;
+    // error_code = 0;
+    // angle_detect_counter = 0;
 }
 
 void WHILL::keep_joy_delay(unsigned long ms) {
