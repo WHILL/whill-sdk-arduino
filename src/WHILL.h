@@ -97,11 +97,15 @@ class WHILL {
     int read(unsigned char* byte);
     int write(unsigned char byte);
 
-    void receivePacket();
+    bool receivePacket();
     void transferPacket(Packet* packet);
 
     PacketReceiver receiver;
     PacketParser parser;
+
+    void clearCache();
+    unsigned long last_received_time = 0;
+    unsigned int interval_ms = 200;
 
    public:
     WHILL(HardwareSerial* hs);
@@ -145,7 +149,13 @@ class WHILL {
 
     typedef struct {
         unsigned char level;
+        bool buzzer;
+    } BatterySaving;
+
+    typedef struct {
+        unsigned char level;
         signed long current;
+        BatterySaving save;
     } Battery;
 
     typedef struct {
@@ -160,6 +170,8 @@ class WHILL {
     Motor right_motor = {0};
     bool power = false;
     int speed_mode_indicator = -1;
+    unsigned char error_code = 0x00;
+    unsigned char angle_detect_counter = 0x00;
 
     // WHILL commands
     void startSendingData0(unsigned int interval_ms, unsigned char speed_mode);

@@ -53,7 +53,10 @@ int WHILL::write(
     return 1;
 }
 
-void WHILL::begin(unsigned int interval) { this->startSendingData1(interval); }
+void WHILL::begin(unsigned int interval) {
+    interval_ms = interval;
+    this->startSendingData1(interval_ms);
+}
 
 void WHILL::transferPacket(Packet* packet) {
     unsigned char buffer[Packet::MAX_LENGTH] = {0};
@@ -65,11 +68,33 @@ void WHILL::transferPacket(Packet* packet) {
     }
 }
 
-void WHILL::receivePacket() {
+bool WHILL::receivePacket() {
+    bool is_received = false;
     unsigned char data;
     while (read(&data) != -1) {
         receiver.push(data);
+        is_received = true;
     }
+    return is_received;
+}
+
+void WHILL::clearCache() {
+    joy.y = 0;
+    joy.x = 0;
+    battery.current = 0;
+    right_motor.speed = 0;
+    left_motor.speed = 0;
+    power = false;
+
+    // Never set to zero, as these are power state independent.
+    // battery.level = 0;
+    // battery.save.level = 0;
+    // battery.save.buzzer = false;
+    // right_motor.angle = 0;
+    // left_motor.angle = 0;
+    // speed_mode_indicator = 0;
+    // error_code = 0;
+    // angle_detect_counter = 0;
 }
 
 void WHILL::keep_joy_delay(unsigned long ms) {
@@ -93,7 +118,15 @@ void WHILL::delay(unsigned long ms) {
 
 void WHILL::refresh() {
     // Scan the data from interface
-    receivePacket();
+    unsigned long now_time = millis();
+    if (receivePacket()) {
+        last_received_time = now_time;
+        return;
+    }
+
+    if ((now_time - last_received_time) > (unsigned long)(interval_ms * 2)) {
+        this->clearCache();
+    }
 }
 
 void WHILL::register_callback(Callback method, EVENT event) {

@@ -58,6 +58,9 @@ void WHILL::PacketParser::parseDataset0(Packet* packet) {
 }
 
 void WHILL::PacketParser::parseDataset1(Packet* packet) {
+    whill->battery.save.level = packet->payload[1];
+    whill->battery.save.buzzer = (packet->payload[2] == 0x01) ? true : false;
+
     whill->joy.y = (int)(signed char)packet->payload[13];
     whill->joy.x = (int)(signed char)packet->payload[14];
 
@@ -82,6 +85,8 @@ void WHILL::PacketParser::parseDataset1(Packet* packet) {
 
     whill->power = packet->payload[26] == 0x00 ? false : true;
     whill->speed_mode_indicator = packet->payload[27];
+    whill->error_code = packet->payload[28];
+    whill->angle_detect_counter = packet->payload[29];
 
     if (whill == NULL) return;
     whill->fire_callback(CALLBACK_DATA1);
