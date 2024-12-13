@@ -35,7 +35,9 @@ class WHILL {
         const static unsigned char PROTOCOL_SIGN = 0xAF;
 
         const static int MAX_LENGTH = 35;
-        const static int MAX_PAYLOAD = MAX_LENGTH - 3;  // protocol_sign,len,cs
+        const static int HEADER_SIZE = 2;  // protocol_sign, len
+        const static int FOOTER_SIZE = 1;  // checksum
+        const static int MAX_PAYLOAD = MAX_LENGTH - (HEADER_SIZE + FOOTER_SIZE);
 
         Packet();
         Packet(unsigned char payload[], int size);
@@ -51,7 +53,7 @@ class WHILL {
 
         unsigned char protocol_sign;
         unsigned char len;
-        unsigned char payload[MAX_LENGTH];
+        unsigned char payload[MAX_PAYLOAD];
         unsigned char cs;
     };
 

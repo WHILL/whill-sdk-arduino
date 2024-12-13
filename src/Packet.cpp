@@ -25,14 +25,14 @@ THE SOFTWARE.
 #include "WHILL.h"
 
 WHILL::Packet::Packet() {
-    protocol_sign = 0xAF;
-    len = 1;
+    protocol_sign = PROTOCOL_SIGN;
+    len = FOOTER_SIZE;
     cs = getCalculatedCS();
 }
 
 WHILL::Packet::Packet(unsigned char payload[], int size) {
-    protocol_sign = 0xAF;
-    len = size + 1;
+    protocol_sign = PROTOCOL_SIGN;
+    len = size + FOOTER_SIZE;
     memcpy(this->payload, payload, size);
     cs = getCalculatedCS();
 }
@@ -40,16 +40,16 @@ WHILL::Packet::Packet(unsigned char payload[], int size) {
 bool WHILL::Packet::is_valid() { return getCalculatedCS() == cs; }
 
 int WHILL::Packet::rawLength() {
-    return 2 + len;  // protocol_sign + len + (the length of payload and cs)
+    return HEADER_SIZE + len;  // protocol_sign + len + (the length of payload and cs)
 }
 
 bool WHILL::Packet::setRaw(unsigned char* raw, int whole_length) {
     protocol_sign = raw[0];
     len = raw[1];
 
-    int prefix = 2;
+    int prefix = HEADER_SIZE;
     int i = 0;
-    for (i = 0; i < len - 1; i++) {
+    for (i = 0; i < len - FOOTER_SIZE; i++) {
         payload[i] = raw[prefix + i];
     }
 
@@ -64,7 +64,7 @@ unsigned char WHILL::Packet::getCalculatedCS() {
     cs ^= protocol_sign;
     cs ^= len;
 
-    for (int i = 0; i < len - 1; i++) {
+    for (int i = 0; i < len - FOOTER_SIZE; i++) {
         cs ^= payload[i];
     }
 
@@ -77,9 +77,9 @@ int WHILL::Packet::getRaw(unsigned char* raw) {
     raw[0] = protocol_sign;
     raw[1] = len;
 
-    int prefix = 2;
+    int prefix = HEADER_SIZE;
     int i = 0;
-    for (i = 0; i < len - 1; i++) {
+    for (i = 0; i < len - FOOTER_SIZE; i++) {
         raw[prefix + i] = payload[i];
     }
 
@@ -89,6 +89,6 @@ int WHILL::Packet::getRaw(unsigned char* raw) {
 }
 
 unsigned char WHILL::Packet::getPayload(int index) {
-    if (index >= MAX_LENGTH) return 0;
+    if (index >= MAX_PAYLOAD) return 0;
     return payload[index];
 }
