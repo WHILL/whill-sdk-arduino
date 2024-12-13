@@ -87,3 +87,8 @@ int WHILL::Packet::getRaw(unsigned char* raw) {
 
     return rawLength();
 }
+
+unsigned char WHILL::Packet::getPayload(int index) {
+    if (index >= MAX_LENGTH) return 0;
+    return payload[index];
+}

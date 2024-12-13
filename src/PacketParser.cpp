@@ -29,7 +29,7 @@ void WHILL::PacketParser::setParent(WHILL* whill) { this->whill = whill; }
 int WHILL::PacketParser::parsePacket(Packet* packet) {
     if (!(packet->is_valid())) return -1;
 
-    switch (packet->payload[0]) {  // Read Command ID
+    switch (packet->getPayload(0)) {  // Read Command ID
 
         case 0x00:  // Data set 0
             parseDataset0(packet);
@@ -58,35 +58,35 @@ void WHILL::PacketParser::parseDataset0(Packet* packet) {
 }
 
 void WHILL::PacketParser::parseDataset1(Packet* packet) {
-    whill->battery.save.level = packet->payload[1];
-    whill->battery.save.buzzer = (packet->payload[2] == 0x01) ? true : false;
+    whill->battery.save.level = packet->getPayload(1);
+    whill->battery.save.buzzer = (packet->getPayload(2) == 0x01) ? true : false;
 
-    whill->joy.y = (int)(signed char)packet->payload[13];
-    whill->joy.x = (int)(signed char)packet->payload[14];
+    whill->joy.y = (int)(signed char)packet->getPayload(13);
+    whill->joy.x = (int)(signed char)packet->getPayload(14);
 
-    whill->battery.level = (unsigned char)packet->payload[15];
+    whill->battery.level = (unsigned char)packet->getPayload(15);
     whill->battery.current =
-        (signed short)((packet->payload[16] << 8) + (packet->payload[17])) *
+        (signed short)((packet->getPayload(16) << 8) + (packet->getPayload(17))) *
         2;  // Unit : 2mA
 
     whill->right_motor.angle =
-        (float)((signed short)((packet->payload[18] << 8) +
-                               (packet->payload[19])) *
+        (float)((signed short)((packet->getPayload(18) << 8) +
+                               (packet->getPayload(19))) *
                 0.001);
     whill->left_motor.angle =
-        (float)((signed short)((packet->payload[20] << 8) +
-                               (packet->payload[21])) *
+        (float)((signed short)((packet->getPayload(20) << 8) +
+                               (packet->getPayload(21))) *
                 0.001);
 
     whill->right_motor.speed =
-        (signed short)((packet->payload[22] << 8) + (packet->payload[23])) * 4;
+        (signed short)((packet->getPayload(22) << 8) + (packet->getPayload(23))) * 4;
     whill->left_motor.speed =
-        (signed short)((packet->payload[24] << 8) + (packet->payload[25])) * 4;
+        (signed short)((packet->getPayload(24) << 8) + (packet->getPayload(25))) * 4;
 
-    whill->power = packet->payload[26] == 0x00 ? false : true;
-    whill->speed_mode_indicator = packet->payload[27];
-    whill->error_code = packet->payload[28];
-    whill->angle_detect_counter = packet->payload[29];
+    whill->power = packet->getPayload(26) == 0x00 ? false : true;
+    whill->speed_mode_indicator = packet->getPayload(27);
+    whill->error_code = packet->getPayload(28);
+    whill->angle_detect_counter = packet->getPayload(29);
 
     if (whill == NULL) return;
     whill->fire_callback(CALLBACK_DATA1);

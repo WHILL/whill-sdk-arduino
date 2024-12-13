@@ -31,7 +31,6 @@ THE SOFTWARE.
 
 class WHILL {
     class Packet {
-       private:
        public:
         const static unsigned char PROTOCOL_SIGN = 0xAF;
 
@@ -41,19 +40,19 @@ class WHILL {
         Packet();
         Packet(unsigned char payload[], int size);
 
+        bool is_valid();
+        bool setRaw(unsigned char* raw, int len);
+        int getRaw(unsigned char* raw);
+        unsigned char getPayload(int index);
+
+       private:
         unsigned char getCalculatedCS();
+        int rawLength();
 
         unsigned char protocol_sign;
         unsigned char len;
         unsigned char payload[MAX_LENGTH];
         unsigned char cs;
-
-        bool is_valid();
-
-        int rawLength();
-
-        bool setRaw(unsigned char* raw, int len);
-        int getRaw(unsigned char* raw);
     };
 
     class PacketParser {
