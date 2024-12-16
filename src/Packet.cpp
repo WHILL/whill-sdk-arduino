@@ -44,16 +44,14 @@ int WHILL::Packet::rawLength() {
 }
 
 bool WHILL::Packet::setRaw(unsigned char* raw, int whole_length) {
-    protocol_sign = raw[0];
-    len = raw[1];
+    int idx = 0;
 
-    int prefix = HEADER_SIZE;
-    int i = 0;
-    for (i = 0; i < len - FOOTER_SIZE; i++) {
-        payload[i] = raw[prefix + i];
+    protocol_sign = raw[idx++];
+    len = raw[idx++];
+    for (int i = 0; i < len - FOOTER_SIZE; i++) {
+        payload[i] = raw[idx++];
     }
-
-    cs = raw[prefix + i];
+    cs = raw[idx++];
 
     return is_valid();
 }
@@ -72,20 +70,16 @@ unsigned char WHILL::Packet::getCalculatedCS() {
 }
 
 int WHILL::Packet::getRaw(unsigned char* raw) {
-    int whole_length = 0;
+    int idx = 0;
 
-    raw[0] = protocol_sign;
-    raw[1] = len;
-
-    int prefix = HEADER_SIZE;
-    int i = 0;
-    for (i = 0; i < len - FOOTER_SIZE; i++) {
-        raw[prefix + i] = payload[i];
+    raw[idx++] = protocol_sign;
+    raw[idx++] = len;
+    for (int i = 0; i < len - FOOTER_SIZE; i++) {
+        raw[idx++] = payload[i];
     }
+    raw[idx++] = cs;
 
-    raw[prefix + i] = cs;
-
-    return rawLength();
+    return idx;
 }
 
 unsigned char WHILL::Packet::getPayload(int index) {
