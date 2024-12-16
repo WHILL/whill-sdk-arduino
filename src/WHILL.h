@@ -48,12 +48,12 @@ class WHILL {
         unsigned char getPayload(int index);
 
        private:
-        unsigned char getCalculatedCS();
+        unsigned char calculateChecksum();
 
         unsigned char protocol_sign;
         unsigned char len;
         unsigned char payload[MAX_PAYLOAD];
-        unsigned char cs;
+        unsigned char checksum;
     };
 
     class PacketParser {

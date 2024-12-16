@@ -27,17 +27,17 @@ THE SOFTWARE.
 WHILL::Packet::Packet() {
     protocol_sign = PROTOCOL_SIGN;
     len = FOOTER_SIZE;
-    cs = getCalculatedCS();
+    checksum = calculateChecksum();
 }
 
 WHILL::Packet::Packet(unsigned char payload[], int size) {
     protocol_sign = PROTOCOL_SIGN;
     len = size + FOOTER_SIZE;
     memcpy(this->payload, payload, size);
-    cs = getCalculatedCS();
+    checksum = calculateChecksum();
 }
 
-bool WHILL::Packet::is_valid() { return getCalculatedCS() == cs; }
+bool WHILL::Packet::is_valid() { return calculateChecksum() == checksum; }
 
 bool WHILL::Packet::setRaw(unsigned char* raw, int whole_length) {
     int idx = 0;
@@ -47,22 +47,9 @@ bool WHILL::Packet::setRaw(unsigned char* raw, int whole_length) {
     for (int i = 0; i < len - FOOTER_SIZE; i++) {
         payload[i] = raw[idx++];
     }
-    cs = raw[idx++];
+    checksum = raw[idx++];
 
     return is_valid();
-}
-
-unsigned char WHILL::Packet::getCalculatedCS() {
-    unsigned char cs = 0x00;
-
-    cs ^= protocol_sign;
-    cs ^= len;
-
-    for (int i = 0; i < len - FOOTER_SIZE; i++) {
-        cs ^= payload[i];
-    }
-
-    return cs;
 }
 
 int WHILL::Packet::getRaw(unsigned char* raw) {
@@ -73,7 +60,7 @@ int WHILL::Packet::getRaw(unsigned char* raw) {
     for (int i = 0; i < len - FOOTER_SIZE; i++) {
         raw[idx++] = payload[i];
     }
-    raw[idx++] = cs;
+    raw[idx++] = checksum;
 
     return idx;
 }
@@ -81,4 +68,16 @@ int WHILL::Packet::getRaw(unsigned char* raw) {
 unsigned char WHILL::Packet::getPayload(int index) {
     if (index >= MAX_PAYLOAD) return 0;
     return payload[index];
+}
+
+unsigned char WHILL::Packet::calculateChecksum() {
+    unsigned char checksum = 0x00;
+
+    checksum ^= protocol_sign;
+    checksum ^= len;
+    for (int i = 0; i < len - FOOTER_SIZE; i++) {
+        checksum ^= payload[i];
+    }
+
+    return checksum;
 }
