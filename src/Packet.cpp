@@ -39,10 +39,6 @@ WHILL::Packet::Packet(unsigned char payload[], int size) {
 
 bool WHILL::Packet::is_valid() { return getCalculatedCS() == cs; }
 
-int WHILL::Packet::rawLength() {
-    return HEADER_SIZE + len;  // protocol_sign + len + (the length of payload and cs)
-}
-
 bool WHILL::Packet::setRaw(unsigned char* raw, int whole_length) {
     int idx = 0;
 

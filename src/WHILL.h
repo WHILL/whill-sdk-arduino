@@ -49,7 +49,6 @@ class WHILL {
 
        private:
         unsigned char getCalculatedCS();
-        int rawLength();
 
         unsigned char protocol_sign;
         unsigned char len;
