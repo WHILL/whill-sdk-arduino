@@ -31,30 +31,29 @@ THE SOFTWARE.
 
 class WHILL {
     class Packet {
-       private:
        public:
         const static unsigned char PROTOCOL_SIGN = 0xAF;
 
         const static int MAX_LENGTH = 35;
-        const static int MAX_PAYLOAD = MAX_LENGTH - 3;  // protocol_sign,len,cs
+        const static int HEADER_SIZE = 2;  // protocol_sign, len
+        const static int FOOTER_SIZE = 1;  // checksum
+        const static int MAX_PAYLOAD = MAX_LENGTH - (HEADER_SIZE + FOOTER_SIZE);
 
         Packet();
         Packet(unsigned char payload[], int size);
 
-        unsigned char getCalculatedCS();
+        bool is_valid();
+        bool setRaw(unsigned char* raw, int len);
+        int getRaw(unsigned char* raw);
+        unsigned char getPayload(int index);
+
+       private:
+        unsigned char calculateChecksum();
 
         unsigned char protocol_sign;
         unsigned char len;
-        unsigned char payload[MAX_LENGTH];
-        unsigned char cs;
-
-        bool is_valid();
-
-        int rawLength();
-
-        bool setRaw(unsigned char* raw, int len);
-        int getRaw(unsigned char* raw);
-        void build();
+        unsigned char payload[MAX_PAYLOAD];
+        unsigned char checksum;
     };
 
     class PacketParser {

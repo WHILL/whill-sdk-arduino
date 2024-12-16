@@ -25,67 +25,59 @@ THE SOFTWARE.
 #include "WHILL.h"
 
 WHILL::Packet::Packet() {
-    protocol_sign = 0xAF;
-    len = 1;
-    build();
+    protocol_sign = PROTOCOL_SIGN;
+    len = FOOTER_SIZE;
+    checksum = calculateChecksum();
 }
 
 WHILL::Packet::Packet(unsigned char payload[], int size) {
-    protocol_sign = 0xAF;
-    len = size + 1;
+    protocol_sign = PROTOCOL_SIGN;
+    len = size + FOOTER_SIZE;
     memcpy(this->payload, payload, size);
-    build();
+    checksum = calculateChecksum();
 }
 
-bool WHILL::Packet::is_valid() { return getCalculatedCS() == cs; }
-
-int WHILL::Packet::rawLength() {
-    return 2 + len;  // protocol_sign + len + (the length of payload and cs)
-}
+bool WHILL::Packet::is_valid() { return calculateChecksum() == checksum; }
 
 bool WHILL::Packet::setRaw(unsigned char* raw, int whole_length) {
-    protocol_sign = raw[0];
-    len = raw[1];
+    int idx = 0;
 
-    int prefix = 2;
-    int i = 0;
-    for (i = 0; i < len - 1; i++) {
-        payload[i] = raw[prefix + i];
+    protocol_sign = raw[idx++];
+    len = raw[idx++];
+    for (int i = 0; i < len - FOOTER_SIZE; i++) {
+        payload[i] = raw[idx++];
     }
-
-    cs = raw[prefix + i];
+    checksum = raw[idx++];
 
     return is_valid();
 }
 
-unsigned char WHILL::Packet::getCalculatedCS() {
-    unsigned char cs = 0x00;
+int WHILL::Packet::getRaw(unsigned char* raw) {
+    int idx = 0;
 
-    cs ^= protocol_sign;
-    cs ^= len;
-
-    for (int i = 0; i < len - 1; i++) {
-        cs ^= payload[i];
+    raw[idx++] = protocol_sign;
+    raw[idx++] = len;
+    for (int i = 0; i < len - FOOTER_SIZE; i++) {
+        raw[idx++] = payload[i];
     }
+    raw[idx++] = checksum;
 
-    return cs;
+    return idx;
 }
 
-void WHILL::Packet::build() { this->cs = getCalculatedCS(); }
+unsigned char WHILL::Packet::getPayload(int index) {
+    if (index >= MAX_PAYLOAD) return 0;
+    return payload[index];
+}
 
-int WHILL::Packet::getRaw(unsigned char* raw) {
-    int whole_length = 0;
+unsigned char WHILL::Packet::calculateChecksum() {
+    unsigned char checksum = 0x00;
 
-    raw[0] = protocol_sign;
-    raw[1] = len;
-
-    int prefix = 2;
-    int i = 0;
-    for (i = 0; i < len - 1; i++) {
-        raw[prefix + i] = payload[i];
+    checksum ^= protocol_sign;
+    checksum ^= len;
+    for (int i = 0; i < len - FOOTER_SIZE; i++) {
+        checksum ^= payload[i];
     }
 
-    raw[prefix + i] = cs;
-
-    return rawLength();
+    return checksum;
 }
