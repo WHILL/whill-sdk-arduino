@@ -32,7 +32,6 @@ void WHILL::startSendingData0(unsigned int interval_ms,
                                (unsigned char)(interval_ms >> 0 & 0xFF),
                                speed_mode};
     Packet packet(payload, sizeof(payload));
-    packet.build();
     transferPacket(&packet);
 }
 
@@ -42,21 +41,18 @@ void WHILL::startSendingData1(unsigned int interval_ms) {
                                (unsigned char)(interval_ms >> 8 & 0xFF),
                                (unsigned char)(interval_ms >> 0 & 0xFF), 0x00};
     Packet packet(payload, sizeof(payload));
-    packet.build();
     transferPacket(&packet);
 }
 
 void WHILL::stopSendingData() {
     unsigned char payload[] = {0x01};  // Stop Sending Data
     Packet packet(payload, sizeof(payload));
-    packet.build();
     transferPacket(&packet);
 }
 
 void WHILL::setPower(bool power) {
     unsigned char payload[] = {0x02, (unsigned char)(power ? 0x01 : 0x00)};
     Packet packet(payload, sizeof(payload));
-    packet.build();
     transferPacket(&packet);
 }
 
@@ -69,7 +65,6 @@ void WHILL::setJoystick(int x, int y) {
                                (unsigned char)(char)(y),
                                (unsigned char)(char)(x)};
     Packet packet(payload, sizeof(payload));
-    packet.build();
     transferPacket(&packet);
 }
 
@@ -86,21 +81,18 @@ void WHILL::setSpeedProfile(SpeedProfile* profile, unsigned char speed_mode) {
                                profile->turn_acceleration,
                                profile->turn_deceleration};
     Packet packet(payload, sizeof(payload));
-    packet.build();
     transferPacket(&packet);
 }
 
 void WHILL::setBatteryVoltaegeOut(bool enable) {
     unsigned char payload[] = {0x05, (unsigned char)(enable ? 0x01 : 0x00)};
     Packet packet(payload, sizeof(payload));
-    packet.build();
     transferPacket(&packet);
 }
 
 void WHILL::setBatterySaving(int low_battery_level, bool sounds_buzzer) {
     unsigned char payload[] = {0x06, (unsigned char)low_battery_level, (unsigned char)(sounds_buzzer ? 0x01 : 0x00)};
     Packet packet(payload, sizeof(payload));
-    packet.build();
     transferPacket(&packet);
 }
 
@@ -112,6 +104,5 @@ void WHILL::setVelocity(int y, int x) {
                                (unsigned char)(x >> 8 & 0xFF),
                                (unsigned char)(x & 0xFF)};
     Packet packet(payload, sizeof(payload));
-    packet.build();
     transferPacket(&packet);
 }
