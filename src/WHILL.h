@@ -64,7 +64,6 @@ class WHILL {
 
        public:
         void setParent(WHILL* whill);
-        void setWHILLReceiver(WHILL* whill);
         int parsePacket(Packet* packet);
     };
 
@@ -83,7 +82,6 @@ class WHILL {
        public:
         int push(unsigned char data);
         int remaining_bytes();
-        void reset();
         void register_callback(void (*callback)());
         void register_callback(PacketParser* obj, int (PacketParser::*method)(
                                                       WHILL::Packet* packet));
