@@ -127,6 +127,16 @@ class WHILL {
     void keep_joy_delay(unsigned long ms);
     void delay(unsigned long ms);
 
+    typedef enum {
+        SPEED_MODE_1 = 0,
+        SPEED_MODE_2,
+        SPEED_MODE_3,
+        SPEED_MODE_4,
+        SPEED_MODE_HOST,  // RS232C
+        SPEED_MODE_APP,   // Smart-phone app
+        SPEED_MODE_SIZE
+    } SPEED_MODE;
+
     typedef struct {
         unsigned char forward_spped;
         unsigned char forward_acceleration;
@@ -162,6 +172,7 @@ class WHILL {
         int speed;
     } Motor;
 
+    SpeedProfile speed_profile[SPEED_MODE_SIZE] = {0};
     Joy virtual_joy = {0};
     Joy joy = {0};
     Battery battery = {0};
