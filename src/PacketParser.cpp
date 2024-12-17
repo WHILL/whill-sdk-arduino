@@ -57,7 +57,7 @@ void WHILL::PacketParser::parseDataset0(Packet* packet) {
 
     unsigned char mode = packet->getPayload(1);
     if (mode < SPEED_MODE_SIZE) {
-        whill->speed_profile[mode].forward_spped = packet->getPayload(2);
+        whill->speed_profile[mode].forward_speed = packet->getPayload(2);
         whill->speed_profile[mode].forward_acceleration = packet->getPayload(3);
         whill->speed_profile[mode].forward_deceleration = packet->getPayload(4);
         whill->speed_profile[mode].reverse_speed = packet->getPayload(5);

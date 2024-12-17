@@ -138,7 +138,7 @@ class WHILL {
     } SPEED_MODE;
 
     typedef struct {
-        unsigned char forward_spped;
+        unsigned char forward_speed;
         unsigned char forward_acceleration;
         unsigned char forward_deceleration;
 
