@@ -72,6 +72,8 @@ void WHILL::PacketParser::parseDataset0(Packet* packet) {
 }
 
 void WHILL::PacketParser::parseDataset1(Packet* packet) {
+    if (whill == NULL) return;
+
     whill->battery.save.level = packet->getPayload(1);
     whill->battery.save.buzzer = (packet->getPayload(2) == 0x01) ? true : false;
 
@@ -102,6 +104,5 @@ void WHILL::PacketParser::parseDataset1(Packet* packet) {
     whill->error_code = packet->getPayload(28);
     whill->angle_detect_counter = packet->getPayload(29);
 
-    if (whill == NULL) return;
     whill->fire_callback(CALLBACK_DATA1);
 }
