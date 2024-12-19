@@ -62,20 +62,20 @@ void WHILL::PacketParser::parseDataset0(Packet* packet) {
     if (whill == NULL) return;
 
     unsigned char mode = packet->getPayload(1);
-    if (mode < SPEED_MODE_SIZE) {
-        whill->speed_profile[mode].forward_speed = packet->getPayload(2);
-        whill->speed_profile[mode].forward_acceleration = packet->getPayload(3);
-        whill->speed_profile[mode].forward_deceleration = packet->getPayload(4);
-        whill->speed_profile[mode].reverse_speed = packet->getPayload(5);
-        whill->speed_profile[mode].reverse_acceleration = packet->getPayload(6);
-        whill->speed_profile[mode].reverse_deceleration = packet->getPayload(7);
-        whill->speed_profile[mode].turn_speed = packet->getPayload(8);
-        whill->speed_profile[mode].turn_acceleration = packet->getPayload(9);
-        whill->speed_profile[mode].turn_deceleration = packet->getPayload(10);
+    if (mode >= SPEED_MODE_SIZE) return;
 
-        // change to STOP after receiving once, because dataset0 is not updated frequently.
-        whill->setSendingStateData0(mode, SENDING_STATE_STOP);
-    }
+    whill->speed_profile[mode].forward_speed = packet->getPayload(2);
+    whill->speed_profile[mode].forward_acceleration = packet->getPayload(3);
+    whill->speed_profile[mode].forward_deceleration = packet->getPayload(4);
+    whill->speed_profile[mode].reverse_speed = packet->getPayload(5);
+    whill->speed_profile[mode].reverse_acceleration = packet->getPayload(6);
+    whill->speed_profile[mode].reverse_deceleration = packet->getPayload(7);
+    whill->speed_profile[mode].turn_speed = packet->getPayload(8);
+    whill->speed_profile[mode].turn_acceleration = packet->getPayload(9);
+    whill->speed_profile[mode].turn_deceleration = packet->getPayload(10);
+
+    // change to STOP after receiving once, because dataset0 is not updated frequently.
+    whill->setSendingStateData0(mode, SENDING_STATE_STOP);
 }
 
 void WHILL::PacketParser::parseDataset1(Packet* packet) {
