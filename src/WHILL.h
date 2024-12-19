@@ -64,7 +64,6 @@ class WHILL {
 
        public:
         void setParent(WHILL* whill);
-        void setWHILLReceiver(WHILL* whill);
         int parsePacket(Packet* packet);
     };
 
@@ -83,7 +82,6 @@ class WHILL {
        public:
         int push(unsigned char data);
         int remaining_bytes();
-        void reset();
         void register_callback(void (*callback)());
         void register_callback(PacketParser* obj, int (PacketParser::*method)(
                                                       WHILL::Packet* packet));
@@ -123,12 +121,23 @@ class WHILL {
     void fire_callback(EVENT event);
 
     void refresh();
+    void updateSpeedProfile();
 
     void keep_joy_delay(unsigned long ms);
     void delay(unsigned long ms);
 
+    typedef enum {
+        SPEED_MODE_1 = 0,
+        SPEED_MODE_2,
+        SPEED_MODE_3,
+        SPEED_MODE_4,
+        SPEED_MODE_HOST,  // RS232C
+        SPEED_MODE_APP,   // Smart-phone app
+        SPEED_MODE_SIZE
+    } SPEED_MODE;
+
     typedef struct {
-        unsigned char forward_spped;
+        unsigned char forward_speed;
         unsigned char forward_acceleration;
         unsigned char forward_deceleration;
 
@@ -162,6 +171,7 @@ class WHILL {
         int speed;
     } Motor;
 
+    SpeedProfile speed_profile[SPEED_MODE_SIZE] = {0};
     Joy virtual_joy = {0};
     Joy joy = {0};
     Battery battery = {0};
@@ -182,6 +192,21 @@ class WHILL {
     void setBatterySaving(int low_battery_level, bool sounds_buzzer);
     void setSpeedProfile(SpeedProfile* profile, unsigned char speed_mode);
     void setVelocity(int y, int x);
+
+   private:
+    typedef enum {
+        SENDING_STATE_STOP = 0,
+        SENDING_STATE_BOOKED,
+        SENDING_STATE_RUN,
+    } SENDING_STATE;
+
+    void setSendingStateData0(unsigned char mode, SENDING_STATE state);
+    void setSendingStateData1(SENDING_STATE state);
+    void setSendingStateAll(SENDING_STATE state);
+    void selectSendingData();
+
+    SENDING_STATE sending_data0_state[SPEED_MODE_SIZE] = {SENDING_STATE_STOP};
+    SENDING_STATE sending_data1_state = SENDING_STATE_STOP;
 };
 
 #endif
