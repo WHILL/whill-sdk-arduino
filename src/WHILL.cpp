@@ -55,7 +55,7 @@ int WHILL::write(
 
 void WHILL::begin(unsigned int interval) {
     interval_ms = interval;
-    this->startSendingData1(interval_ms);
+    this->updateSpeedProfile();
 }
 
 void WHILL::transferPacket(Packet* packet) {
@@ -118,8 +118,45 @@ void WHILL::delay(unsigned long ms) {
     }
 }
 
+void WHILL::setSendingStateData0(unsigned char mode, SENDING_STATE state) {
+    if (mode >= SPEED_MODE_SIZE) return;
+    sending_data0_state[mode] = state;
+}
+
+void WHILL::setSendingStateData1(SENDING_STATE state) {
+    sending_data1_state = state;
+}
+
+void WHILL::setSendingStateAll(SENDING_STATE state) {
+    for (int mode = 0; mode < (int)SPEED_MODE_SIZE; mode++) {
+        this->setSendingStateData0(mode, state);
+    }
+    this->setSendingStateData1(state);
+}
+
+void WHILL::selectSendingData() {
+    // update dataset0
+    for (int mode = 0; mode < (int)SPEED_MODE_SIZE; mode++) {
+        if (sending_data0_state[mode] == SENDING_STATE_RUN) {
+            // do nothing (after receiving response, sending_data0_state will change to STOP)
+            return;
+        }
+        if (sending_data0_state[mode] == SENDING_STATE_BOOKED) {
+            this->startSendingData0(interval_ms, mode);
+            return;
+        }
+    }
+
+    // update dataset1
+    if (sending_data1_state == SENDING_STATE_BOOKED) {
+        this->startSendingData1(interval_ms);
+        return;
+    }
+}
+
 void WHILL::refresh() {
-    // Scan the data from interface
+    this->selectSendingData();
+
     unsigned long now_time = millis();
     if (receivePacket()) {
         last_received_time = now_time;
@@ -129,6 +166,10 @@ void WHILL::refresh() {
     if ((now_time - last_received_time) > (unsigned long)(interval_ms * 2)) {
         this->clearCache();
     }
+}
+
+void WHILL::updateSpeedProfile() {
+    this->setSendingStateAll(SENDING_STATE_BOOKED);
 }
 
 void WHILL::register_callback(Callback method, EVENT event) {

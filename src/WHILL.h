@@ -121,6 +121,7 @@ class WHILL {
     void fire_callback(EVENT event);
 
     void refresh();
+    void updateSpeedProfile();
 
     void keep_joy_delay(unsigned long ms);
     void delay(unsigned long ms);
@@ -191,6 +192,21 @@ class WHILL {
     void setBatterySaving(int low_battery_level, bool sounds_buzzer);
     void setSpeedProfile(SpeedProfile* profile, unsigned char speed_mode);
     void setVelocity(int y, int x);
+
+   private:
+    typedef enum {
+        SENDING_STATE_STOP = 0,
+        SENDING_STATE_BOOKED,
+        SENDING_STATE_RUN,
+    } SENDING_STATE;
+
+    void setSendingStateData0(unsigned char mode, SENDING_STATE state);
+    void setSendingStateData1(SENDING_STATE state);
+    void setSendingStateAll(SENDING_STATE state);
+    void selectSendingData();
+
+    SENDING_STATE sending_data0_state[SPEED_MODE_SIZE] = {SENDING_STATE_STOP};
+    SENDING_STATE sending_data1_state = SENDING_STATE_STOP;
 };
 
 #endif
