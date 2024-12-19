@@ -55,7 +55,7 @@ int WHILL::write(
 
 void WHILL::begin(unsigned int interval) {
     interval_ms = interval;
-    this->startSendingData1(interval_ms);
+    this->updateSpeedProfile();
 }
 
 void WHILL::transferPacket(Packet* packet) {
@@ -87,14 +87,16 @@ void WHILL::clearCache() {
     power = false;
 
     // Never set to zero, as these are power state independent.
-    // battery.level = 0;
-    // battery.save.level = 0;
-    // battery.save.buzzer = false;
-    // right_motor.angle = 0;
-    // left_motor.angle = 0;
-    // speed_mode_indicator = 0;
-    // error_code = 0;
-    // angle_detect_counter = 0;
+    // --------------------------------------------------------
+    // speed_profile[]
+    // battery.level
+    // battery.save.level
+    // battery.save.buzzer
+    // right_motor.angle
+    // left_motor.angle
+    // speed_mode_indicator
+    // error_code
+    // angle_detect_counter
 }
 
 void WHILL::keep_joy_delay(unsigned long ms) {
@@ -116,8 +118,45 @@ void WHILL::delay(unsigned long ms) {
     }
 }
 
+void WHILL::setSendingStateData0(unsigned char mode, SENDING_STATE state) {
+    if (mode >= SPEED_MODE_SIZE) return;
+    sending_data0_state[mode] = state;
+}
+
+void WHILL::setSendingStateData1(SENDING_STATE state) {
+    sending_data1_state = state;
+}
+
+void WHILL::setSendingStateAll(SENDING_STATE state) {
+    for (int mode = 0; mode < (int)SPEED_MODE_SIZE; mode++) {
+        this->setSendingStateData0(mode, state);
+    }
+    this->setSendingStateData1(state);
+}
+
+void WHILL::selectSendingData() {
+    // update dataset0
+    for (int mode = 0; mode < (int)SPEED_MODE_SIZE; mode++) {
+        if (sending_data0_state[mode] == SENDING_STATE_RUN) {
+            // do nothing (after receiving response, sending_data0_state will change to STOP)
+            return;
+        }
+        if (sending_data0_state[mode] == SENDING_STATE_BOOKED) {
+            this->startSendingData0(interval_ms, mode);
+            return;
+        }
+    }
+
+    // update dataset1
+    if (sending_data1_state == SENDING_STATE_BOOKED) {
+        this->startSendingData1(interval_ms);
+        return;
+    }
+}
+
 void WHILL::refresh() {
-    // Scan the data from interface
+    this->selectSendingData();
+
     unsigned long now_time = millis();
     if (receivePacket()) {
         last_received_time = now_time;
@@ -127,6 +166,10 @@ void WHILL::refresh() {
     if ((now_time - last_received_time) > (unsigned long)(interval_ms * 2)) {
         this->clearCache();
     }
+}
+
+void WHILL::updateSpeedProfile() {
+    this->setSendingStateAll(SENDING_STATE_BOOKED);
 }
 
 void WHILL::register_callback(Callback method, EVENT event) {

@@ -33,10 +33,16 @@ int WHILL::PacketParser::parsePacket(Packet* packet) {
 
         case 0x00:  // Data set 0
             parseDataset0(packet);
+            if (whill != NULL) {
+                whill->fire_callback(CALLBACK_DATA0);
+            }
             break;
 
         case 0x01:  // Data set 1
             parseDataset1(packet);
+            if (whill != NULL) {
+                whill->fire_callback(CALLBACK_DATA1);
+            }
             break;
 
         case 0x52:  // Response of power WHILL on.
@@ -54,10 +60,27 @@ int WHILL::PacketParser::parsePacket(Packet* packet) {
 
 void WHILL::PacketParser::parseDataset0(Packet* packet) {
     if (whill == NULL) return;
-    whill->fire_callback(CALLBACK_DATA0);
+
+    unsigned char mode = packet->getPayload(1);
+    if (mode >= SPEED_MODE_SIZE) return;
+
+    whill->speed_profile[mode].forward_speed = packet->getPayload(2);
+    whill->speed_profile[mode].forward_acceleration = packet->getPayload(3);
+    whill->speed_profile[mode].forward_deceleration = packet->getPayload(4);
+    whill->speed_profile[mode].reverse_speed = packet->getPayload(5);
+    whill->speed_profile[mode].reverse_acceleration = packet->getPayload(6);
+    whill->speed_profile[mode].reverse_deceleration = packet->getPayload(7);
+    whill->speed_profile[mode].turn_speed = packet->getPayload(8);
+    whill->speed_profile[mode].turn_acceleration = packet->getPayload(9);
+    whill->speed_profile[mode].turn_deceleration = packet->getPayload(10);
+
+    // change to STOP after receiving once, because dataset0 is not updated frequently.
+    whill->setSendingStateData0(mode, SENDING_STATE_STOP);
 }
 
 void WHILL::PacketParser::parseDataset1(Packet* packet) {
+    if (whill == NULL) return;
+
     whill->battery.save.level = packet->getPayload(1);
     whill->battery.save.buzzer = (packet->getPayload(2) == 0x01) ? true : false;
 
@@ -87,7 +110,4 @@ void WHILL::PacketParser::parseDataset1(Packet* packet) {
     whill->speed_mode_indicator = packet->getPayload(27);
     whill->error_code = packet->getPayload(28);
     whill->angle_detect_counter = packet->getPayload(29);
-
-    if (whill == NULL) return;
-    whill->fire_callback(CALLBACK_DATA1);
 }
