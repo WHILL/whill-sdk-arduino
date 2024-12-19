@@ -33,10 +33,16 @@ int WHILL::PacketParser::parsePacket(Packet* packet) {
 
         case 0x00:  // Data set 0
             parseDataset0(packet);
+            if (whill != NULL) {
+                whill->fire_callback(CALLBACK_DATA0);
+            }
             break;
 
         case 0x01:  // Data set 1
             parseDataset1(packet);
+            if (whill != NULL) {
+                whill->fire_callback(CALLBACK_DATA1);
+            }
             break;
 
         case 0x52:  // Response of power WHILL on.
@@ -70,8 +76,6 @@ void WHILL::PacketParser::parseDataset0(Packet* packet) {
         // change to STOP after receiving once, because dataset0 is not updated frequently.
         whill->setSendingStateData0(mode, SENDING_STATE_STOP);
     }
-
-    whill->fire_callback(CALLBACK_DATA0);
 }
 
 void WHILL::PacketParser::parseDataset1(Packet* packet) {
@@ -106,6 +110,4 @@ void WHILL::PacketParser::parseDataset1(Packet* packet) {
     whill->speed_mode_indicator = packet->getPayload(27);
     whill->error_code = packet->getPayload(28);
     whill->angle_detect_counter = packet->getPayload(29);
-
-    whill->fire_callback(CALLBACK_DATA1);
 }
