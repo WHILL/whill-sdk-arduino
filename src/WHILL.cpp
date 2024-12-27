@@ -118,39 +118,64 @@ void WHILL::delay(unsigned long ms) {
     }
 }
 
-void WHILL::setSendingStateData0(unsigned char mode, SENDING_STATE state) {
+void WHILL::onReceivedData0(unsigned char mode) {
     if (mode >= SPEED_MODE_SIZE) return;
-    sending_data0_state[mode] = state;
+    if (sending_data0_state[mode] != SENDING_STATE_SENT) return;
+    sending_data0_state[mode] = SENDING_STATE_RECEIVED;
 }
 
-void WHILL::setSendingStateData1(SENDING_STATE state) {
-    sending_data1_state = state;
+void WHILL::onReceivedData1() {
+    if (sending_data1_state != SENDING_STATE_SENT) return;
+    sending_data1_state = SENDING_STATE_RECEIVED;
 }
 
 void WHILL::setSendingStateAll(SENDING_STATE state) {
     for (int mode = 0; mode < (int)SPEED_MODE_SIZE; mode++) {
-        this->setSendingStateData0(mode, state);
+        sending_data0_state[mode] = state;
     }
-    this->setSendingStateData1(state);
+    sending_data1_state = state;
 }
 
 void WHILL::selectSendingData() {
+    // If there is no reply, retry to send.
+    bool should_resend = false;
+    unsigned long now_time = millis();
+    if ((now_time - last_sent_time) > (unsigned long)(interval_ms * 2)) {
+        should_resend = true;
+    }
+
     // update dataset0
     for (int mode = 0; mode < (int)SPEED_MODE_SIZE; mode++) {
-        if (sending_data0_state[mode] == SENDING_STATE_RUN) {
-            // do nothing (after receiving response, sending_data0_state will change to STOP)
-            return;
-        }
-        if (sending_data0_state[mode] == SENDING_STATE_BOOKED) {
-            this->startSendingData0(interval_ms, mode);
-            return;
+        switch (sending_data0_state[mode]) {
+            case SENDING_STATE_BOOKED:
+                sending_data0_state[mode] = SENDING_STATE_SENT;
+                this->startSendingData0(interval_ms, mode);
+                last_sent_time = now_time;
+                return;
+            case SENDING_STATE_SENT:
+                if (should_resend) {
+                    sending_data0_state[mode] = SENDING_STATE_BOOKED;
+                }
+                return;
+            default:
+                break;
         }
     }
 
     // update dataset1
-    if (sending_data1_state == SENDING_STATE_BOOKED) {
-        this->startSendingData1(interval_ms);
-        return;
+    switch (sending_data1_state) {
+        case SENDING_STATE_BOOKED:
+            sending_data1_state = SENDING_STATE_SENT;
+            this->startSendingData1(interval_ms);
+            last_sent_time = now_time;
+            return;
+        case SENDING_STATE_SENT:
+            if (should_resend) {
+                sending_data1_state = SENDING_STATE_BOOKED;
+            }
+            return;
+        default:
+            break;
     }
 }
 

@@ -111,6 +111,7 @@ class WHILL {
     PacketParser parser;
 
     void clearCache();
+    unsigned long last_sent_time = 0;
     unsigned long last_received_time = 0;
     unsigned int interval_ms = 200;
 
@@ -207,11 +208,12 @@ class WHILL {
     typedef enum {
         SENDING_STATE_STOP = 0,
         SENDING_STATE_BOOKED,
-        SENDING_STATE_RUN,
+        SENDING_STATE_SENT,
+        SENDING_STATE_RECEIVED,
     } SENDING_STATE;
 
-    void setSendingStateData0(unsigned char mode, SENDING_STATE state);
-    void setSendingStateData1(SENDING_STATE state);
+    void onReceivedData0(unsigned char mode);
+    void onReceivedData1();
     void setSendingStateAll(SENDING_STATE state);
     void selectSendingData();
 
