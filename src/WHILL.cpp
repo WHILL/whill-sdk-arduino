@@ -33,70 +33,27 @@ WHILL::WHILL(WhillSerial* serial) {
     receiver.register_callback(&parser, &PacketParser::parsePacket);
 }
 
-int WHILL::read(
-    unsigned char* byte) {  // Implementation of read interaface to WHILL
-    if (serial == NULL) return -1;
-
-    int data = serial->read();
-    if (data == -1) return -1;  // Nothing read
-
-    *byte = data;
-
-    return 1;
-}
-
-int WHILL::write(
-    unsigned char byte) {  // Implementation of write interface to WHILL
-    if (serial == NULL) return -1;
-    serial->write(byte);
-
-    return 1;
-}
-
 void WHILL::begin(unsigned int interval) {
     interval_ms = interval;
     this->updateSpeedProfile();
 }
 
-void WHILL::transferPacket(Packet* packet) {
-    unsigned char buffer[Packet::MAX_LENGTH] = {0};
-    int size = packet->getRaw(buffer);
-    if (size > 1) {
-        for (int i = 0; i < size; i++) {
-            write(buffer[i]);
-        }
-    }
+void WHILL::register_callback(Callback method, EVENT event) {
+    callback_functions[event] = method;
 }
 
-bool WHILL::receivePacket() {
-    bool is_received = false;
-    unsigned char data;
-    while (read(&data) != -1) {
-        receiver.push(data);
-        is_received = true;
+void WHILL::refresh() {
+    this->switchDataset();
+
+    unsigned long now_time = millis();
+    if (receivePacket()) {
+        last_received_time = now_time;
+        return;
     }
-    return is_received;
-}
 
-void WHILL::clearCache() {
-    joy.y = 0;
-    joy.x = 0;
-    battery.current = 0;
-    right_motor.speed = 0;
-    left_motor.speed = 0;
-    power = false;
-
-    // Never set to zero, as these are power state independent.
-    // --------------------------------------------------------
-    // speed_profile[]
-    // battery.level
-    // battery.save.level
-    // battery.save.buzzer
-    // right_motor.angle
-    // left_motor.angle
-    // speed_mode_indicator
-    // error_code
-    // angle_detect_counter
+    if ((now_time - last_received_time) > (unsigned long)(interval_ms * 2)) {
+        this->clearCache();
+    }
 }
 
 void WHILL::keep_joy_delay(unsigned long ms) {
@@ -118,22 +75,54 @@ void WHILL::delay(unsigned long ms) {
     }
 }
 
-void WHILL::onReceivedData0(unsigned char mode) {
-    if (mode >= SPEED_MODE_SIZE) return;
-    if (sending_data0_state[mode] != SENDING_STATE_SENT) return;
-    sending_data0_state[mode] = SENDING_STATE_RECEIVED;
+void WHILL::updateSpeedProfile() {
+    this->setSendingStateAll(SENDING_STATE_BOOKED);
 }
 
-void WHILL::onReceivedData1() {
-    if (sending_data1_state != SENDING_STATE_SENT) return;
-    sending_data1_state = SENDING_STATE_RECEIVED;
+void WHILL::fire_callback(EVENT event) {
+    if (callback_functions[event] == NULL) return;
+    callback_functions[event](this);
 }
 
-void WHILL::setSendingStateAll(SENDING_STATE state) {
-    for (int mode = 0; mode < (int)SPEED_MODE_SIZE; mode++) {
-        sending_data0_state[mode] = state;
+int WHILL::read(
+    unsigned char* byte) {  // Implementation of read interaface to WHILL
+    if (serial == NULL) return -1;
+
+    int data = serial->read();
+    if (data == -1) return -1;  // Nothing read
+
+    *byte = data;
+
+    return 1;
+}
+
+int WHILL::write(
+    unsigned char byte) {  // Implementation of write interface to WHILL
+    if (serial == NULL) return -1;
+    serial->write(byte);
+
+    return 1;
+}
+
+bool WHILL::receivePacket() {
+    bool is_received = false;
+    unsigned char data = 0;
+
+    while (read(&data) != -1) {
+        receiver.push(data);
+        is_received = true;
     }
-    sending_data1_state = state;
+    return is_received;
+}
+
+void WHILL::transferPacket(Packet* packet) {
+    unsigned char buffer[Packet::MAX_LENGTH] = {0};
+    int size = packet->getRaw(buffer);
+    if (size > 1) {
+        for (int i = 0; i < size; i++) {
+            write(buffer[i]);
+        }
+    }
 }
 
 void WHILL::switchDataset() {
@@ -179,29 +168,41 @@ void WHILL::switchDataset() {
     }
 }
 
-void WHILL::refresh() {
-    this->switchDataset();
+void WHILL::clearCache() {
+    joy.y = 0;
+    joy.x = 0;
+    battery.current = 0;
+    right_motor.speed = 0;
+    left_motor.speed = 0;
+    power = false;
 
-    unsigned long now_time = millis();
-    if (receivePacket()) {
-        last_received_time = now_time;
-        return;
+    // Never set to zero, as these are power state independent.
+    // --------------------------------------------------------
+    // speed_profile[]
+    // battery.level
+    // battery.save.level
+    // battery.save.buzzer
+    // right_motor.angle
+    // left_motor.angle
+    // speed_mode_indicator
+    // error_code
+    // angle_detect_counter
+}
+
+void WHILL::onReceivedData0(unsigned char mode) {
+    if (mode >= SPEED_MODE_SIZE) return;
+    if (sending_data0_state[mode] != SENDING_STATE_SENT) return;
+    sending_data0_state[mode] = SENDING_STATE_RECEIVED;
+}
+
+void WHILL::onReceivedData1() {
+    if (sending_data1_state != SENDING_STATE_SENT) return;
+    sending_data1_state = SENDING_STATE_RECEIVED;
+}
+
+void WHILL::setSendingStateAll(SENDING_STATE state) {
+    for (int mode = 0; mode < (int)SPEED_MODE_SIZE; mode++) {
+        sending_data0_state[mode] = state;
     }
-
-    if ((now_time - last_received_time) > (unsigned long)(interval_ms * 2)) {
-        this->clearCache();
-    }
-}
-
-void WHILL::updateSpeedProfile() {
-    this->setSendingStateAll(SENDING_STATE_BOOKED);
-}
-
-void WHILL::register_callback(Callback method, EVENT event) {
-    callback_functions[event] = method;
-}
-
-void WHILL::fire_callback(EVENT event) {
-    if (callback_functions[event] == NULL) return;
-    callback_functions[event](this);
+    sending_data1_state = state;
 }
