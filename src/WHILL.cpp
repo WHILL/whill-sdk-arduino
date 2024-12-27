@@ -79,6 +79,17 @@ void WHILL::updateSpeedProfile() {
     this->setSendingStateAll(SENDING_STATE_BOOKED);
 }
 
+void WHILL::powerOn() {
+    this->setPower(true);
+    this->delay(10);
+    this->setPower(true);
+    this->updateSpeedProfile();
+}
+
+void WHILL::powerOff() {
+    this->setPower(false);
+}
+
 void WHILL::fire_callback(EVENT event) {
     if (callback_functions[event] == NULL) return;
     callback_functions[event](this);

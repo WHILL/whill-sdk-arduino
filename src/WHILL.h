@@ -157,6 +157,8 @@ class WHILL {
     void keep_joy_delay(unsigned long ms);
     void delay(unsigned long ms);
     void updateSpeedProfile();
+    void powerOn();
+    void powerOff();
 
     // Control command
     void startSendingData0(unsigned int interval_ms, unsigned char speed_mode);
