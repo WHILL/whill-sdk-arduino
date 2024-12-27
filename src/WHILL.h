@@ -215,7 +215,7 @@ class WHILL {
     void onReceivedData0(unsigned char mode);
     void onReceivedData1();
     void setSendingStateAll(SENDING_STATE state);
-    void selectSendingData();
+    void switchDataset();
 
     SENDING_STATE sending_data0_state[SPEED_MODE_SIZE] = {SENDING_STATE_STOP};
     SENDING_STATE sending_data1_state = SENDING_STATE_STOP;

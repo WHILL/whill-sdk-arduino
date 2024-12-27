@@ -136,7 +136,7 @@ void WHILL::setSendingStateAll(SENDING_STATE state) {
     sending_data1_state = state;
 }
 
-void WHILL::selectSendingData() {
+void WHILL::switchDataset() {
     // If there is no reply, retry to send.
     bool should_resend = false;
     unsigned long now_time = millis();
@@ -180,7 +180,7 @@ void WHILL::selectSendingData() {
 }
 
 void WHILL::refresh() {
-    this->selectSendingData();
+    this->switchDataset();
 
     unsigned long now_time = millis();
     if (receivePacket()) {
