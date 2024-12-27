@@ -24,8 +24,8 @@ THE SOFTWARE.
 
 #include "WHILL.h"
 
-WHILL::WHILL(HardwareSerial* hs) {
-    this->serial = hs;
+WHILL::WHILL(WhillSerial* serial) {
+    this->serial = serial;
     this->serial->begin(38400);
 
     parser.setParent(this);

@@ -25,9 +25,19 @@ THE SOFTWARE.
 #ifndef __WHILL_H__
 #define __WHILL_H__
 
+#undef USE_HARDWARE_SERIAL
+#define USE_HARDWARE_SERIAL (1)  // If you use HardwareSerial, enable this line.
+
 #include <Arduino.h>
-#include <HardwareSerial.h>
 #include <stdio.h>
+
+#ifndef USE_HARDWARE_SERIAL
+#include <SoftwareSerial.h>
+using WhillSerial = SoftwareSerial;
+#else
+#include <HardwareSerial.h>
+using WhillSerial = HardwareSerial;
+#endif
 
 class WHILL {
     class Packet {
@@ -88,7 +98,7 @@ class WHILL {
     };
 
    private:
-    HardwareSerial* serial;
+    WhillSerial* serial;
 
     // Custom One byte transceiver
     int read(unsigned char* byte);
@@ -105,7 +115,7 @@ class WHILL {
     unsigned int interval_ms = 200;
 
    public:
-    WHILL(HardwareSerial* hs);
+    WHILL(WhillSerial* serial);
     void begin(unsigned int interval);
 
     // Callback
