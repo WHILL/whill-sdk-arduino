@@ -33,8 +33,6 @@ void WHILL::startSendingData0(unsigned int interval_ms,
                                speed_mode};
     Packet packet(payload, sizeof(payload));
     transferPacket(&packet);
-
-    this->setSendingStateData0(speed_mode, SENDING_STATE_RUN);
 }
 
 void WHILL::startSendingData1(unsigned int interval_ms) {
@@ -44,8 +42,6 @@ void WHILL::startSendingData1(unsigned int interval_ms) {
                                (unsigned char)(interval_ms >> 0 & 0xFF), 0x00};
     Packet packet(payload, sizeof(payload));
     transferPacket(&packet);
-
-    this->setSendingStateData1(SENDING_STATE_RUN);
 }
 
 void WHILL::stopSendingData() {
