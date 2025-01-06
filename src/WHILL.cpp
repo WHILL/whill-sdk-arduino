@@ -33,6 +33,68 @@ WHILL::WHILL(WhillSerial* serial) {
     receiver.register_callback(&parser, &PacketParser::parsePacket);
 }
 
+void WHILL::begin(unsigned int interval) {
+    interval_ms = interval;
+    this->updateSpeedProfile();
+}
+
+void WHILL::register_callback(Callback method, EVENT event) {
+    callback_functions[event] = method;
+}
+
+void WHILL::refresh() {
+    this->switchDataset();
+
+    unsigned long now_time = millis();
+    if (receivePacket()) {
+        last_received_time = now_time;
+        return;
+    }
+
+    if ((now_time - last_received_time) > (unsigned long)(interval_ms * 2)) {
+        this->clearCache();
+    }
+}
+
+void WHILL::keep_joy_delay(unsigned long ms) {
+    while (ms > 0) {
+        refresh();
+        if (ms % 100 == 0) {
+            this->setJoystick(virtual_joy.x, virtual_joy.y);
+        }
+        ms--;
+        ::delay(1);
+    }
+}
+
+void WHILL::delay(unsigned long ms) {
+    while (ms > 0) {
+        refresh();
+        ms--;
+        ::delay(1);
+    }
+}
+
+void WHILL::updateSpeedProfile() {
+    this->setSendingStateAll(SENDING_STATE_BOOKED);
+}
+
+void WHILL::powerOn() {
+    this->setPower(true);
+    this->delay(10);
+    this->setPower(true);
+    this->updateSpeedProfile();
+}
+
+void WHILL::powerOff() {
+    this->setPower(false);
+}
+
+void WHILL::fire_callback(EVENT event) {
+    if (callback_functions[event] == NULL) return;
+    callback_functions[event](this);
+}
+
 int WHILL::read(
     unsigned char* byte) {  // Implementation of read interaface to WHILL
     if (serial == NULL) return -1;
@@ -53,9 +115,15 @@ int WHILL::write(
     return 1;
 }
 
-void WHILL::begin(unsigned int interval) {
-    interval_ms = interval;
-    this->updateSpeedProfile();
+bool WHILL::receivePacket() {
+    bool is_received = false;
+    unsigned char data = 0;
+
+    while (read(&data) != -1) {
+        receiver.push(data);
+        is_received = true;
+    }
+    return is_received;
 }
 
 void WHILL::transferPacket(Packet* packet) {
@@ -68,14 +136,47 @@ void WHILL::transferPacket(Packet* packet) {
     }
 }
 
-bool WHILL::receivePacket() {
-    bool is_received = false;
-    unsigned char data;
-    while (read(&data) != -1) {
-        receiver.push(data);
-        is_received = true;
+void WHILL::switchDataset() {
+    // If there is no reply, retry to send.
+    bool should_resend = false;
+    unsigned long now_time = millis();
+    if ((now_time - last_sent_time) > (unsigned long)(interval_ms * 2)) {
+        should_resend = true;
     }
-    return is_received;
+
+    // update dataset0
+    for (int mode = 0; mode < (int)SPEED_MODE_SIZE; mode++) {
+        switch (sending_data0_state[mode]) {
+            case SENDING_STATE_BOOKED:
+                sending_data0_state[mode] = SENDING_STATE_SENT;
+                this->startSendingData0(interval_ms, mode);
+                last_sent_time = now_time;
+                return;
+            case SENDING_STATE_SENT:
+                if (should_resend) {
+                    sending_data0_state[mode] = SENDING_STATE_BOOKED;
+                }
+                return;
+            default:
+                break;
+        }
+    }
+
+    // update dataset1
+    switch (sending_data1_state) {
+        case SENDING_STATE_BOOKED:
+            sending_data1_state = SENDING_STATE_SENT;
+            this->startSendingData1(interval_ms);
+            last_sent_time = now_time;
+            return;
+        case SENDING_STATE_SENT:
+            if (should_resend) {
+                sending_data1_state = SENDING_STATE_BOOKED;
+            }
+            return;
+        default:
+            break;
+    }
 }
 
 void WHILL::clearCache() {
@@ -99,84 +200,20 @@ void WHILL::clearCache() {
     // angle_detect_counter
 }
 
-void WHILL::keep_joy_delay(unsigned long ms) {
-    while (ms > 0) {
-        refresh();
-        if (ms % 100 == 0) {
-            this->setJoystick(virtual_joy.x, virtual_joy.y);
-        }
-        ms--;
-        ::delay(1);
-    }
-}
-
-void WHILL::delay(unsigned long ms) {
-    while (ms > 0) {
-        refresh();
-        ms--;
-        ::delay(1);
-    }
-}
-
-void WHILL::setSendingStateData0(unsigned char mode, SENDING_STATE state) {
+void WHILL::onReceivedData0(unsigned char mode) {
     if (mode >= SPEED_MODE_SIZE) return;
-    sending_data0_state[mode] = state;
+    if (sending_data0_state[mode] != SENDING_STATE_SENT) return;
+    sending_data0_state[mode] = SENDING_STATE_RECEIVED;
 }
 
-void WHILL::setSendingStateData1(SENDING_STATE state) {
-    sending_data1_state = state;
+void WHILL::onReceivedData1() {
+    if (sending_data1_state != SENDING_STATE_SENT) return;
+    sending_data1_state = SENDING_STATE_RECEIVED;
 }
 
 void WHILL::setSendingStateAll(SENDING_STATE state) {
     for (int mode = 0; mode < (int)SPEED_MODE_SIZE; mode++) {
-        this->setSendingStateData0(mode, state);
+        sending_data0_state[mode] = state;
     }
-    this->setSendingStateData1(state);
-}
-
-void WHILL::selectSendingData() {
-    // update dataset0
-    for (int mode = 0; mode < (int)SPEED_MODE_SIZE; mode++) {
-        if (sending_data0_state[mode] == SENDING_STATE_RUN) {
-            // do nothing (after receiving response, sending_data0_state will change to STOP)
-            return;
-        }
-        if (sending_data0_state[mode] == SENDING_STATE_BOOKED) {
-            this->startSendingData0(interval_ms, mode);
-            return;
-        }
-    }
-
-    // update dataset1
-    if (sending_data1_state == SENDING_STATE_BOOKED) {
-        this->startSendingData1(interval_ms);
-        return;
-    }
-}
-
-void WHILL::refresh() {
-    this->selectSendingData();
-
-    unsigned long now_time = millis();
-    if (receivePacket()) {
-        last_received_time = now_time;
-        return;
-    }
-
-    if ((now_time - last_received_time) > (unsigned long)(interval_ms * 2)) {
-        this->clearCache();
-    }
-}
-
-void WHILL::updateSpeedProfile() {
-    this->setSendingStateAll(SENDING_STATE_BOOKED);
-}
-
-void WHILL::register_callback(Callback method, EVENT event) {
-    callback_functions[event] = method;
-}
-
-void WHILL::fire_callback(EVENT event) {
-    if (callback_functions[event] == NULL) return;
-    callback_functions[event](this);
+    sending_data1_state = state;
 }
