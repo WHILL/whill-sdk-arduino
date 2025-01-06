@@ -38,21 +38,20 @@ Initialize WHILL instance with HardwareSerial.
 ### Power Control
 
 ```cpp
-WHILL::setPower(bool)
+WHILL::powerOn()
 ```
-Turn on/off a WHILL. `True` to power WHILL on. 
+Turn on a WHILL.
+
+```cpp
+WHILL::powerOff()
+```
+Turn off a WHILL.
 
 ```cpp
 WHILL::setBatteryVoltaegeOut(bool)
 ```
 Enable/Disable power supply to the interface connector. `True` to enable power supply. <br>
 **Note:** This command is for **Model CR** only.
-
-```cpp
-WHILL::setBatterySaving(int low_battery_level, bool sounds_buzzer)
-```
-Configure battery protection settings. low_battery_level is battery charge level to engage the standby mode with range 1 ~ 90. sounds_buzzer is Enable/Disable a buzzing sound at the battery charge level of low_battery_level + 10 percentage points. True to enable a buzzing sound when battery level low. As default, low_battery_level is 19 and sounds_buzzer is True. <br>
-**Note:** This command is for **Model CR2** only.
 
 
 ### Motor Control
@@ -69,12 +68,26 @@ Control the speed of a WHILL directly via this command. *y* is integer values wi
 **Attention:** WHILL moves so quickly using SetVelocity command and so pay enough attention to use SetVelocity command. Basically, send this command to increase speed gradually.
 
 
+### Setting Change
+
+```cpp
+WHILL::setSpeedProfile(SpeedProfile* profile, unsigned char speed_mode)
+```
+Change the speed profile of WHILL.
+
+```cpp
+WHILL::setBatterySaving(int low_battery_level, bool sounds_buzzer)
+```
+Configure battery protection settings. low_battery_level is battery charge level to engage the standby mode with range 1 ~ 90. sounds_buzzer is Enable/Disable a buzzing sound at the battery charge level of low_battery_level + 10 percentage points. True to enable a buzzing sound when battery level low. As default, low_battery_level is 19 and sounds_buzzer is True. <br>
+**Note:** This command is for **Model CR2** only.
+
+
 ### Data Fetching
 
 ```cpp
 WHILL::begin(unsigned int interval_ms)
 ```
-Command WHILL to start reporting WHILL status (Dataset1).
+Command WHILL to start reporting WHILL status.
 
 ```cpp
 WHILL::refresh()
@@ -87,6 +100,11 @@ Callbacks are fired when these functions are called.
 WHILL::stopSendingData()
 ```
 Command WHILL to stop report WHILL status.
+
+```cpp
+WHILL::updateSpeedProfile()
+```
+Command WHILL to update speed profile cache. If you want the latest speed profile, send this command.
 
 
 ### Data Reference
@@ -118,6 +136,22 @@ Angle and speed of motors. The angle range is -*PI* to +*PI*, the speed unit is 
 bool   WHILL::speed_mode_indicator
 ```
 Current selected speed mode.
+
+
+#### Speed Profile
+
+```cpp
+unsigned char WHILL::speed_profile[mode].forward_speed
+unsigned char WHILL::speed_profile[mode].forward_acceleration
+unsigned char WHILL::speed_profile[mode].forward_deceleration
+unsigned char WHILL::speed_profile[mode].reverse_speed
+unsigned char WHILL::speed_profile[mode].reverse_acceleration
+unsigned char WHILL::speed_profile[mode].reverse_deceleration
+unsigned char WHILL::speed_profile[mode].turn_speed
+unsigned char WHILL::speed_profile[mode].turn_acceleration
+unsigned char WHILL::speed_profile[mode].turn_deceleration
+```
+Current speed profile. `mode` is 0 ~ 5.
 
 
 ### Callback
