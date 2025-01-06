@@ -16,6 +16,9 @@ register_callback	    KEYWORD2
 refresh	                KEYWORD2
 keep_joy_delay	        KEYWORD2
 delay	                KEYWORD2
+updateSpeedProfile	    KEYWORD2
+powerOn	                KEYWORD2
+powerOff	            KEYWORD2
 startSendingData0	    KEYWORD2
 startSendingData1	    KEYWORD2
 stopSendingData	        KEYWORD2
